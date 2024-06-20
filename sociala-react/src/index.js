@@ -31,6 +31,7 @@ import Grouppage from './pages/Grouppage';
 import Userpage from './pages/Userpage';
 import Authorpage from './pages/Authorpage';
 import Analytics from './pages/Analytics';
+import Forums from './pages/Forums';
 
 
 import { BrowserRouter, Switch, Route  } from 'react-router-dom';
@@ -61,6 +62,7 @@ class Root extends Component{
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultpets`} component={Pets}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/detailpets/:id`} component={DetailPets}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/newpet`} component={NewPet}/>
+                    <Route exact path={`${process.env.PUBLIC_URL}/defaultforums`} component={Forums}/>
 
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultmember`} component={Member}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/password`} component={Password}/>
