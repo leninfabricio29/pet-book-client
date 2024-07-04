@@ -7,8 +7,6 @@ import './main.scss';
 
 import Home from './pages/Home';
 
-import Group from './pages/Group';
-import Storie from './pages/Storie';
 import Member from './pages/Member';
 import Settings from './pages/Settings';
 import Account from './pages/Account';
@@ -21,6 +19,7 @@ import Notfound from './pages/Notfound';
 import Pets from './pages/Pets';
 import DetailPets from './pages/DetailPets';
 import Welcome from './pages/Welcome';
+import DetailPost from './pages/DetailPost'
 
 
 import Event from './pages/Event';
@@ -39,18 +38,20 @@ import * as serviceWorker from './serviceWorker';
 import NewPet from './pages/NewPet';
 import Eventos from './pages/Eventos';
 
+
 class Root extends Component{
   render(){
       return(
+        
           <BrowserRouter basename={'/'}>
 
             
               <Switch>
-                    <Route exact path={`${process.env.PUBLIC_URL}/`} component={Login}/>
+
+
+                         <Route exact path={`${process.env.PUBLIC_URL}/`} component={Login}/>
 
                     <Route exact path={`${process.env.PUBLIC_URL}/home`} component={Home}/>
-                    <Route exact path={`${process.env.PUBLIC_URL}/defaultgroup`} component={Group}/>
-                    <Route exact path={`${process.env.PUBLIC_URL}/defaultstorie`} component={Storie}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultsettings`} component={Settings}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultvideo`} component={Videos}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultanalytics`} component={Analytics}/>
@@ -63,6 +64,8 @@ class Root extends Component{
                     <Route exact path={`${process.env.PUBLIC_URL}/detailpets/:id`} component={DetailPets}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/newpet`} component={NewPet}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultforums`} component={Forums}/>
+                    <Route exact path={`${process.env.PUBLIC_URL}/detailpost/:id`} component={DetailPost}/>
+
 
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultmember`} component={Member}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/password`} component={Password}/>
@@ -80,6 +83,8 @@ class Root extends Component{
                     <Route exact path={`${process.env.PUBLIC_URL}/userpage/:id`} component={Userpage}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/authorpage`} component={Authorpage}/>  
 
+                
+                   
                     
               </Switch>
           </BrowserRouter>

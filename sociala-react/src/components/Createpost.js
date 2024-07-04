@@ -5,6 +5,7 @@ import { Switch } from "@mui/material";
 import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import GoogleMapsAPI from '../utils/google-maps-api';
 
 const mapContainerStyle = {
   width: '100%',
@@ -204,10 +205,8 @@ class Createpost extends Component {
           <label className='fw-700 text-first'>
             Ubicación:
           </label>
-          <LoadScript
-            googleMapsApiKey="AIzaSyCbI4nMuWwVI8gRXK0Q9NumVr08ItvolIg "
-          >
-            <GoogleMap
+          <GoogleMapsAPI googleMapsApiKey={"AIzaSyCbI4nMuWwVI8gRXK0Q9NumVr08ItvolIg"}>
+          <GoogleMap
               mapContainerStyle={mapContainerStyle}
               zoom={14}
               center={location || { lat: -3.994837599441174, lng: -79.20580382951684 }}
@@ -215,7 +214,7 @@ class Createpost extends Component {
             >
               {location && <Marker position={location} />}
             </GoogleMap>
-          </LoadScript>
+          </GoogleMapsAPI>
         </div>
         <div className='text-center mt-4'>
           <button className='btn btn-success text-light fw-700' onClick={this.handleSubmit}> Publicar <i className='feather-send'></i></button>

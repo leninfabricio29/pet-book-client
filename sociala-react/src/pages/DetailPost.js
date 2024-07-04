@@ -11,7 +11,7 @@ import Appfooter from '../components/Appfooter';
 
 
 
-const PostView = () => {
+const DetailPost = () => {
   const { id } = useParams();
   const [postDetails, setPostDetails] = useState(null);
   const [commentsDetails, setCommentsDetails] = useState([]);
@@ -208,4 +208,4 @@ const PostView = () => {
   );
 };
 
-export default PostView;
+export default DetailPost;
