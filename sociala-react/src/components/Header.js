@@ -4,10 +4,10 @@ import { Link, NavLink, useHistory } from 'react-router-dom';
 
 function Header() {
     const [isOpen, setIsOpen] = useState(false);
-    const [isActive, setIsActive] = useState(false);
     const [user, setUser] = useState(null);
-    const history = useHistory();
     const [profile, setProfile] = useState(null);
+    const [countNotifications, setCountNotifications] = useState(0);
+    const history = useHistory();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -15,14 +15,28 @@ function Header() {
 
             if (storedUser) {
                 setUser(storedUser);
-                console.log("Usuario logueado", storedUser);
 
                 try {
-                    const profileResponse = await axios.get(`http://localhost:5000/api/v1/profiles/${storedUser._id}`);
+                    const profileResponse = await axios.get(`http://localhost:3010/api/v1/profiles/${storedUser._id}`);
                     const data = profileResponse.data;
+                    
+                    const owner = data.user._id;
 
                     setProfile(data);
-                    console.log(data)
+
+                    const response = await axios.post('http://localhost:3010/api/v1/notifications/profile/notifications', { owner });
+                    const notifications = response.data;
+
+                    let unreadCount = 0;
+                    for (let index = 0; index < notifications.length; index++) {
+                        const element = notifications[index];
+                        if (!element.view) {
+                            unreadCount++;
+                        }
+                    }
+
+                    setCountNotifications(unreadCount);
+
                 } catch (error) {
                     console.error('Error fetching profile data', error);
                 }
@@ -35,39 +49,32 @@ function Header() {
         fetchData();
     }, [history]);
 
-    const toggleOpen = () => setIsOpen(!isOpen);
-
-    const navClass = `${isOpen ? "nav-active" : ""}`;
-    const buttonClass = `${isOpen ? "active" : ""}`;
-
     return (
-        
         <div className="nav-header bg-white shadow-xs border-0">
             <div className="nav-top">
                 <Link to="/">
                     <span className="fredoka-font mr-2 fw-600 text-current font-xxl logo-text m-4">PetBook</span>
                 </Link>
-                <button onClick={toggleOpen} className={`nav-menu me-0 ms-2 ${buttonClass}`}></button>
+                <button onClick={() => setIsOpen(!isOpen)} className={`nav-menu me-0 ms-2 ${isOpen ? "active" : ""}`}></button>
             </div>
-            
 
             <div className='text-center d-flex justify-content-center align-items-center m-4'>
                 <NavLink activeClassName="active" to="/home" className="p-2 text-center ms-3 menu-icon center-menu-icon">
                     <i className="feather-home font-lg bg-greylight btn-round-lg theme-dark-bg text-grey-500 "></i>
                 </NavLink>
                 {profile && (
-                   <NavLink activeClassName="active" to="/defaultnoti" className="p-2 text-center ms-0 menu-icon center-menu-icon">
-                   <div className="notification-icon-container">
-                       <i className="feather-bell font-lg bg-greylight btn-round-lg theme-dark-bg text-grey-500"></i>
-                       {profile.profile.notifications.length > 0 && (
-                           <span className="notification-count">
-                               {profile.profile.notifications.length}
-                           </span>
-                       )}
-                   </div>
-               </NavLink>
+                    <NavLink activeClassName="active" to="/defaultnoti" className="p-2 text-center ms-0 menu-icon center-menu-icon">
+                        <div className="notification-icon-container">
+                            <i className="feather-bell font-lg bg-greylight btn-round-lg theme-dark-bg text-grey-500"></i>
+                            {countNotifications > 0 && (
+                                <span className="notification-count">
+                                    {countNotifications}
+                                </span>
+                            )}
+                        </div>
+                    </NavLink>
                 )}
-                
+
                 <NavLink activeClassName="active" to="/defaultmember" className="p-2 text-center ms-0 menu-icon center-menu-icon">
                     <i className="feather-user font-lg bg-greylight btn-round-lg theme-dark-bg text-grey-500 "></i>
                 </NavLink>
@@ -78,10 +85,10 @@ function Header() {
             </Link>
 
             {profile && (
-                    <img src={profile.profile.photo_profile_url} alt="Profile" width={40} height={40} className=' m-2 rounded' />
+                <img src={profile.profile.photo_profile_url} alt="Profile" width={40} height={40} className=' m-2 rounded' />
             )}
 
-            <nav className={`navigation scroll-bar ${navClass}`}>
+            <nav className={`navigation scroll-bar ${isOpen ? "nav-active" : ""}`}>
                 <div className="container ps-0 pe-0">
                     <div className="nav-content">
                         <div className="nav-wrap bg-white bg-transparent-card rounded-xxl shadow-xss pt-3 pb-1 mb-2 mt-2">
@@ -90,11 +97,9 @@ function Header() {
                                 <li className="logo d-none d-xl-block d-lg-block"></li>
                                 <li><Link to="/home" className="nav-content-bttn open-font"><i className="feather-home btn-round-md text-grey-500 me-3"></i><span>Inicio</span></Link></li>
                                 <li><Link to="/defaultforums" className="nav-content-bttn open-font"><i className="feather-edit btn-round-md text-grey-500 me-3"></i><span>Foros</span></Link></li>
-                                <li><Link to="/defaultbadge" className="nav-content-bttn open-font"><i className="feather-search btn-round-md text-grey-500 me-3"></i><span>Buscar</span></Link></li>
-                                <li><Link to="/defaultstorie" className="nav-content-bttn open-font"><i className="feather-globe btn-round-md text-grey-500 me-3"></i><span>Historias</span></Link></li>
                                 <li><Link to="/defaultevents" className="nav-content-bttn open-font"><i className="feather-calendar btn-round-md text-grey-500 me-3"></i><span>Eventos</span></Link></li>
                                 <li><Link to="/defaultanalytics" className="nav-content-bttn open-font"><i className="feather-pie-chart btn-round-md text-grey-500 me-3"></i><span>Estadísticas</span></Link></li>
-                                <li><Link to="/defaultgroup" className="nav-content-bttn open-font"><i className="feather-bell btn-round-md text-grey-500 me-3"></i><span>Notificaciones</span></Link></li>
+                                <li><Link to="/defaultnoti" className="nav-content-bttn open-font"><i className="feather-bell btn-round-md text-grey-500 me-3"></i><span>Notificaciones</span></Link></li>
                             </ul>
                         </div>
 

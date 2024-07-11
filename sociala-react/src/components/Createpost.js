@@ -5,7 +5,7 @@ import { Switch } from "@mui/material";
 import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import GoogleMapsAPI from '../utils/google-maps-api';
+import MapComponent from '../components/MapComponent';
 
 const mapContainerStyle = {
   width: '100%',
@@ -32,7 +32,7 @@ class Createpost extends Component {
 
   fetchPets = async () => {
     try {
-      const response = await axios.post('http://localhost:5010/api/v1/pets/search', {
+      const response = await axios.post('http://localhost:3010/api/v1/pets/search', {
         owner: JSON.parse(localStorage.getItem('user'))._id
       });
 
@@ -104,7 +104,7 @@ class Createpost extends Component {
     console.log("Este es el ide de la mascota",petId);
 
     try {
-      await axios.post('http://localhost:5020/api/v1/posts/new', {
+      await axios.post('http://localhost:3010/api/v1/posts/new', {
         type: postType.value,
         body: petDescription,
         coordinates: [longitude, latitude],
@@ -205,16 +205,10 @@ class Createpost extends Component {
           <label className='fw-700 text-first'>
             Ubicación:
           </label>
-          <GoogleMapsAPI googleMapsApiKey={"AIzaSyCbI4nMuWwVI8gRXK0Q9NumVr08ItvolIg"}>
-          <GoogleMap
-              mapContainerStyle={mapContainerStyle}
-              zoom={14}
-              center={location || { lat: -3.994837599441174, lng: -79.20580382951684 }}
-              onClick={this.handleMapClick}
-            >
-              {location && <Marker position={location} />}
-            </GoogleMap>
-          </GoogleMapsAPI>
+          <MapComponent
+                  location={location}
+                  onMapClick={this.handleMapClick}
+           />
         </div>
         <div className='text-center mt-4'>
           <button className='btn btn-success text-light fw-700' onClick={this.handleSubmit}> Publicar <i className='feather-send'></i></button>

@@ -3,8 +3,9 @@ import axios from 'axios';
 import { Tooltip } from '@mui/material';
 import WhatsAppLink from './WhatsAppLink';
 import { GoogleMap, Marker } from '@react-google-maps/api';
-import GoogleMapsAPI from '../utils/google-maps-api';
+import {useGoogleMaps} from '../utils/GoogleMapsContext';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 const PostCard = ({ post }) => {
   const [location, setLocation] = useState(null);
@@ -12,10 +13,9 @@ const PostCard = ({ post }) => {
   const [reactionsCount, setReactionsCount] = useState(post.amount_reactions);
   const [commentsCount, setCommentsCount] = useState(post.amount_comments);
 
-  const [postDetails, setPostDetails] = useState(null); // Estado para los detalles del post
-  const [commentsDetails, setCommentsDetails] = useState([]); // Estado para los detalles de los comentarios
-  const [showCommentForm, setShowCommentForm] = useState(false); // Estado para mostrar el formulario de comentarios
-  const [newComment, setNewComment] = useState(''); // Estado para el nuevo comentario
+  const [commentsDetails, setCommentsDetails] = useState([]);
+  const [showCommentForm, setShowCommentForm] = useState(false);
+  const [newComment, setNewComment] = useState('');
 
   const mensaje = "Tengo información sobre la mascota extraviada que publicaste";
 
@@ -23,7 +23,7 @@ const PostCard = ({ post }) => {
     const checkUserReaction = async () => {
       const user = JSON.parse(localStorage.getItem('user'));
       try {
-        const response = await axios.get(`http://localhost:5020/api/v1/reactions/check`, {
+        const response = await axios.get(`http://localhost:3010/api/v1/reactions/check`, {
           params: {
             userId: user._id,
             postId: post._id
@@ -56,7 +56,7 @@ const PostCard = ({ post }) => {
   const handleReaction = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     try {
-      const response = await axios.post('http://localhost:5020/api/v1/reactions/new', {
+      const response = await axios.post('http://localhost:3010/api/v1/reactions/new', {
         userId: user._id,
         postId: post._id
       });
@@ -72,24 +72,6 @@ const PostCard = ({ post }) => {
     }
   };
 
-  const handleShowDetails = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5020/api/v1/posts/${post._id}`);
-      const comments = response.data.comments;
-
-      // Hacer solicitudes para obtener cada comentario
-      const commentsDetails = await Promise.all(comments.map(async (comment) => {
-        const commentResponse = await axios.get(`http://localhost:5020/api/v1/comments/${comment._id}`);
-        return commentResponse.data;
-      }));
-
-      setPostDetails(response.data);
-      setCommentsDetails(commentsDetails); // Establecer detalles de los comentarios
-    } catch (error) {
-      console.error('Error al obtener los detalles del post:', error);
-    }
-  };
-
   const handleShowCommentForm = () => {
     setShowCommentForm(true);
   };
@@ -102,23 +84,18 @@ const PostCard = ({ post }) => {
     event.preventDefault();
     const user = JSON.parse(localStorage.getItem('user'));
     try {
-      const response = await axios.post('http://localhost:5020/api/v1/comments/post/new', {
+      const response = await axios.post('http://localhost:3010/api/v1/comments/post/new', {
         content: newComment,
         createdBy: user._id,
         postId: post._id
       });
 
-
-
       if (response.status === 201) {
         setCommentsCount(commentsCount + 1);
-        toast.success("Haz hecho un comentario! ")
+        toast.success("Haz hecho un comentario!");
         setCommentsDetails([...commentsDetails, response.data]);
         setNewComment('');
         setShowCommentForm(false);
-
-        window.location.reload();
-
       }
     } catch (error) {
       console.error('Error al publicar el comentario:', error);
@@ -126,7 +103,6 @@ const PostCard = ({ post }) => {
   };
 
   if (post.owner === JSON.parse(localStorage.getItem('user'))._id) {
-    // Si el usuario actual es el autor de la publicación, no renderizar la tarjeta
     return null;
   }
 
@@ -148,12 +124,9 @@ const PostCard = ({ post }) => {
 
         <div className='col-6 d-flex justify-content-end'>
           <Tooltip title="Ver publicación">
-            <a href={`/detailpost/${post._id}`}>
-              ir a detalles
-            </a>
-            <button  className='btn btn-transparent' data-bs-toggle="modal" data-bs-target={`#modalDetails-${post._id}`} onClick={handleShowDetails}>
+            <Link to={`/detailpost/${post._id}`}>
               <i className='feather-maximize-2'></i>
-            </button>
+            </Link>
           </Tooltip>
         </div>
       </div>
@@ -183,7 +156,7 @@ const PostCard = ({ post }) => {
           <Tooltip title="Comentarios">
             <button className="btn p-2" onClick={handleShowCommentForm}>
               <i className="feather-message-square"></i>
-              <span className="ms-2">{post.amount_comments}</span>
+              <span className="ms-2">{commentsCount}</span>
             </button>
           </Tooltip>
 
@@ -223,7 +196,7 @@ const PostCard = ({ post }) => {
               </button>
             </div>
             <div className="modal-body">
-              <GoogleMapsAPI googleMapsApiKey={"AIzaSyBJV8sX5ObZJB4V0gy6ILSqjEcVOYOMcZ4"}>
+              
                 <GoogleMap
                   mapContainerStyle={{ width: '100%', height: '400px' }}
                   zoom={14}
@@ -231,95 +204,9 @@ const PostCard = ({ post }) => {
                 >
                   {location && <Marker position={location} />}
                 </GoogleMap>
-              </GoogleMapsAPI>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={handleCloseMap}>Cerrar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="modal fade" id={`modalDetails-${post._id}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">Detalles de la publicación</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div className='modal-body'>
-              {postDetails ? (
-                <div className='row d-flex'>
-                  <div className='col'>
-                    <img className='cover rounded pt-4 pb-4 bg-dark' src={post.petPhoto} alt="Pet"/>
-                  </div>
-
-                  <div className='col'>
-                    <div className='row d-flex'>
-                      <div className='col-6 d-flex text-start p-2'>
-                        <img
-                          src={post.profilePhoto}
-                          alt="Profile"
-                          className="rounded-circle"
-                          width="40"
-                          height="40"
-                        />
-                        <small className='text-dark m-2'>{post.firstName} {post.lastName}</small>
-                      </div>
-
-                      <hr className='hr'></hr>
-                    </div>
-
-                    <div className='text-center'>
-                    <Tooltip title={hasReacted ? "Te gusta esta publicación" : "Me gusta"}>
-            <button className="btn p-2" onClick={handleReaction}>
-              <i className="feather-heart" style={{ color: hasReacted ? 'green' : 'black' }}></i>
-              <span className="ms-2">{reactionsCount}</span>
-            </button>
-          </Tooltip>
-
-          <Tooltip title="Comentarios">
-            <button className="btn p-2" onClick={handleShowCommentForm}>
-              <i className="feather-message-square"></i>
-              <span className="ms-2">{post.amount_comments}</span>
-            </button>
-          </Tooltip>
-                      </div>
-
-                    <div className="mt-4 chat-container">
-                      <h6>Comentarios</h6>
-                      {commentsDetails.length > 0 ? (
-                        commentsDetails.map((comment) => (
-                          <div key={comment._id} className="comment mb-2">
-                            <div className="d-flex ">
-                              <img
-                                src={comment.profileData.profile.photo_profile_url}
-                                alt="User"
-                                className="rounded-circle"
-                                width="30"
-                                height="30"
-                              />
-                              <div className="ms-2 border p-2 rounded shadow flex-grow-1">
-                                <div className="d-flex justify-content-between align-items-center">
-                                  <h6 className="text-muted mb-0">{comment.profileData.user.name} {comment.profileData.user.last_name}</h6>
-                                  <h6 className="mb-0">{new Date(comment.comment.createdAt).toLocaleDateString()}</h6>
-                                </div>
-                                <div className="mt-2">
-                                  <p className="mb-1 h6">{comment.comment.content}</p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div>No hay comentarios</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div>Cargando detalles...</div>
-              )}
             </div>
           </div>
         </div>

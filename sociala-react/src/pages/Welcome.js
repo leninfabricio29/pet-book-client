@@ -56,7 +56,7 @@ class Welcome extends React.Component {
         formData.append('description', description);
 
         try {
-            const response = await axios.post('http://localhost:5000/api/v1/profiles/new', formData);
+            const response = await axios.post('http://localhost:3010/api/v1/profiles/new', formData);
 
             if (response.status === 201) {
                 toast.success('Perfil creado exitosamente');

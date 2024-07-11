@@ -73,7 +73,7 @@ class Eventos extends React.Component {
 
   fetchEventData = async () => {
     try {
-      const response = await axios.get('http://localhost:5020/api/v1/events/all');
+      const response = await axios.get('http://localhost:3010/api/v1/events/all');
       this.setState({ eventData: response.data });
     } catch (error) {
       toast.error("Error al cargar los eventos: " + error);

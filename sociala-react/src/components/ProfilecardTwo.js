@@ -14,7 +14,8 @@ class ProfilecardTwo extends Component {
             followers: null,
             following: null,
             isLoading: true,
-            error: null
+            error: null,
+            participants: [],
         };
     }
 
@@ -24,20 +25,20 @@ class ProfilecardTwo extends Component {
 
         if (user) {
             try {
-                const profileResponse = await axios.get(`http://localhost:5000/api/v1/profiles/${user._id}`);
+                const profileResponse = await axios.get(`http://localhost:3010/api/v1/profiles/${user._id}`);
                 const { data: profileData } = profileResponse;
 
 
 
                 const profileId = profileData.profile._id;
-                const followersResponse = await axios.get(`http://localhost:5000/api/v1/profiles/followers/${profileId}`);
+                const followersResponse = await axios.get(`http://localhost:3010/api/v1/profiles/followers/${profileId}`);
                 const { data: followersData } = followersResponse;
 
 
-                const followingResponse = await axios.get(`http://localhost:5000/api/v1/profiles/following/${profileId}`);
+                const followingResponse = await axios.get(`http://localhost:3010/api/v1/profiles/following/${profileId}`);
                 const {data: followingData } = followingResponse;
 
-                const eventsResponse = await axios.get(`http://localhost:5020/api/v1/events/${user._id}`);
+                const eventsResponse = await axios.get(`http://localhost:3010/api/v1/events/${user._id}`);
                 const { data: eventsData } = eventsResponse;
 
                 this.setState({
@@ -48,6 +49,7 @@ class ProfilecardTwo extends Component {
 
                     isLoading: false
                 });
+
 
 
             } catch (error) {
@@ -67,6 +69,11 @@ class ProfilecardTwo extends Component {
     handleTabClick = (tabName) => {
         this.setState({ activeTab: tabName });
     };
+
+    getParticipantIds = (eventId) => {
+        const participants = axios.get(`http://localhost:3010/api/v1/events/users-events/${eventId}`)
+        console.log(participants)
+    }
 
     formatDate = (dateString) => {
         // Crear un nuevo objeto Date
@@ -95,7 +102,7 @@ class ProfilecardTwo extends Component {
 
 
     render() {
-        const { activeTab, user, profile, events, followers, following, isLoading, error } = this.state;
+        const { activeTab, user, profile, events, followers, following, isLoading, error, participants } = this.state;
 
 
         if (isLoading) {
@@ -212,21 +219,20 @@ class ProfilecardTwo extends Component {
                             <div className="row">
     {followers.map((follower, index) => (
         <div key={index} className="col-md-3 col-sm-4 pe-2 ps-2">
-            <div className="card d-block border-0 shadow-xss rounded-3 overflow-hidden mb-3">
-                <div className="card-body d-block w-100 ps-3 pe-3 pb-4 text-center">
-                    <figure className="overflow-hidden avatar ms-auto me-auto mb-0 position-relative w65 z-index-1">
+            <div className="card-body d-block w-100 ps-3 pe-3 pb-4 text-center shadow rounded">
+                    <figure className="overflow-hidden avatar ms-auto me-auto mb-0 position-relative w65 z-index-1 p-2">
                         <img src={follower.photo_profile_url} alt="avatar" className="float-right p-0 bg-white rounded-circle w-100 shadow-xss" />
                     </figure>
                     <div className="clearfix w-100"></div>
-                    <h4 className="fw-700 font-xsss mt-3 mb-0">{follower.user.name} {follower.user.last_name}</h4>
-                    <p className="fw-500 font-xssss text-grey-500 mt-0 mb-3">@{follower.user.username}</p>
+                    <Link to={`/userpage/${follower.user._id}`}>
+                                                            <h4 className="fw-700 text-grey-900 font-xssss mt-4">
+                                                                {follower.user.name} {follower.user.last_name}
+                                                            </h4>
+                                                        </Link>                    <p className="fw-500 font-xssss text-grey-500 mt-0 mb-3">@{follower.user.username}</p>
+                                                        <p className="fw-500 font-xssss text-grey-500 mt-0 mb-3">0{follower.number_phone}</p>
 
-                    <div>
-                        <a href={`/profiles/${follower._id}`} className="mt-4 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl bg-primary font-xsssss fw-700 ls-lg text-white">Ver perfil</a>
-                        <a href="#" className="mt-4 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl bg-grey-oscured font-xsssss fw-700 ls-lg text-white">Eliminar</a>
-                    </div>
+                    
                 </div>
-            </div>
         </div>
     ))}
 </div>
@@ -243,13 +249,12 @@ class ProfilecardTwo extends Component {
                                     </div>
                                 </form>
                             </h2>
-                            <div className="row">
+                            <div className="row mt-4">
     {following.map((follower, index) => (
         <div key={index} className="col-md-3 col-sm-4 pe-2 ps-2 mt-4">
-            <div className="card d-block border shadow-xss rounded-3 overflow-hidden mb-3">
-                <div className="card-body d-block w-100 ps-3 pe-3 pb-4 text-center">
-                    <figure className="overflow-hidden avatar ms-auto me-auto mb-0 position-relative w65 z-index-1">
-                        <img src={follower.photo_profile_url} alt="avatar" className="float-right p-0 bg-white rounded-circle w-100 shadow-xss" />
+            <div className="card-body d-block w-100 ps-3 pe-3 pb-4 text-center shadow rounded">
+            <figure className="overflow-hidden avatar ms-auto me-auto mb-0 position-relative w65 z-index-1 p-2">
+            <img src={follower.photo_profile_url} alt="avatar" className="float-right p-0 bg-white rounded-circle w-100 shadow-xss" />
                     </figure>
                     <div className="clearfix w-100"></div>
                     <Link to={`/userpage/${follower.user._id}`}>
@@ -259,10 +264,9 @@ class ProfilecardTwo extends Component {
                                                         </Link>                    <p className="fw-500 font-xssss text-grey-500 mt-0 mb-3">@{follower.user.username}</p>
 
                     <div>
-                        <a href="#" className="mt-4 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl btn-danger font-xsssss fw-700 ls-lg text-white">Dejar de seguir</a>
+                        <a href="#" className="btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl btn-danger font-xsssss fw-700 ls-lg text-white">Dejar de seguir</a>
                     </div>
                 </div>
-            </div>
         </div>
     ))}
 </div>
@@ -285,37 +289,41 @@ class ProfilecardTwo extends Component {
                             </h2>
 
 
-                            <div className='container '>
+                            <div className='container'>
 
                                 <div className='d-flex flex-row flex-wrap'>
 
                                 {events.map((event, index) => (
     <div key={index} className="d-inline-block mt-4">
-    <div className="card p-2 bg-white hover-card border-1 p-4 shadow-sm rounded-xxl m-2">
+    <div className=" rounded p-2 shadow m-2">
       <div className="row align-items-center">
         <div className="col-auto">
           <img
-            src="https://cdn-icons-png.flaticon.com/512/10691/10691802.png"
+            src="https://cdn4.iconfinder.com/data/icons/marketing-and-digital-marketing/32/business_marketing_advertising_event_calendar-21-512.png"
             alt="Imagen de calendario"
-            style={{ width: 80 }}
+            style={{ width: 40 }}
           />
         </div>
         <div className="col">
           <span className="d-block font-weight-bold">
           <i className='feather-mail me-2'></i>
 
-            Jornada de {event.description}
+          <strong className='fw-700 font-xssss text-grey-500'> Jornada de {event.description} </strong>  
           </span>
           <span className="d-block">
           <i className='feather-map-pin me-2'></i>
 
-            Fecha: {new Date(event.date).toLocaleDateString('es-ES')}
+          <strong className='fw-700 font-xssss text-grey-500'> Fecha: {new Date(event.date).toLocaleDateString('es-ES')} </strong> 
           </span>
-          <div className="alert alert-info mt-2 p-2">
-            <span>Has guardado este evento</span>
-          </div>
+          
         </div>
       </div>
+
+      <div className='row mx-auto'>
+      <button className="btn btn-info fw-500 font-xsss text-light mx-2 mt-2" onClick={() => this.getParticipantIds(event._id)}>
+                                                    Ver participantes
+                                                </button>
+        </div>
     </div>
   </div>
 ))}

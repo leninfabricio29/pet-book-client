@@ -23,7 +23,7 @@ class EventoUno extends Component {
 
     fetchEvents = async () => {
         try {
-            const response = await axios.get('http://localhost:5020/api/v1/events/all');
+            const response = await axios.get('http://localhost:3010/api/v1/events/all');
             const events = response.data;
             const user = JSON.parse(localStorage.getItem('user'));
             this.setState({ user, events });
@@ -40,7 +40,7 @@ class EventoUno extends Component {
         }
 
         try {
-            const response = await axios.post('http://localhost:5020/api/v1/events/save', {
+            const response = await axios.post('http://localhost:3010/api/v1/events/save', {
                 userId: user._id,
                 eventId: eventId,
             });
@@ -93,23 +93,23 @@ class EventoUno extends Component {
 
                                 {events.map((event, index) => (
                                     <div key={index} className="col-lg-4 col-md-6 pe-2 ps-2">
-                                        <div className="card p-3 bg-white w-100 hover-card border-0 shadow-xss rounded-xxl border-0 mb-3 overflow-hidden ">
-                                            <div className="card-image w-100">
+                                        <div className="card p-3 bg-white  hover-card border-0 shadow rounded-xxl border-0 mb-3 overflow-hidden ">
+                                            <div className="card-image w-50 m-auto p-2 shadow rounded">
                                                 {event.description === 'Adopción' && (
-                                                    <img src="https://res.cloudinary.com/dlhh5olhn/image/upload/v1716571981/events/rn2tbkqhnlm6trfyefb5.jpg" alt="event" className="w-100 rounded-3" />
+                                                    <img src="https://cdn-icons-png.flaticon.com/512/8183/8183234.png" alt="event" className="w-100 rounded-3" />
                                                 )}
                                                 {event.description === 'Donaciones' && (
-                                                    <img src="https://res.cloudinary.com/dlhh5olhn/image/upload/v1716571981/events/faos5irjdxm37etncpon.jpg" alt="event" className="w-100 rounded-3" />
+                                                    <img src="https://cdn-icons-png.freepik.com/512/6410/6410115.png" alt="event" className="w-100 rounded-3" />
                                                 )}
                                                 {event.description === 'Esterilización' && (
-                                                    <img src="https://res.cloudinary.com/dlhh5olhn/image/upload/v1716571981/events/cdje7cosgfvzfkwh5src.jpg" alt="event" className="w-100 rounded-3" />
+                                                    <img src="https://cdn-icons-png.flaticon.com/512/1068/1068392.png" alt="event" className="w-100 rounded-3" />
                                                 )}
                                             </div>
-                                            <div className="card-body d-flex ps-0 pe-0 pb-0">
-                                                <h2 className="fw-100 lh-3 font-xss">
+                                            <div className="card-body d-flex ps-0 pe-0 pb-0 m-auto">
+                                                <h2 className="fw-600 text-grey-800 font-xss">
                                                     Jornada de, {event.description}
 
-                                                    <div className="me-3 p-3 rounded-xxl theme-dark-bg">
+                                                    <div className="p-2 rounded-xxl theme-dark-bg">
                                                         <h4 className="fw-700 font-lg ls-3 text-grey-900 mb-0">
                                                             <span className="ls-3 d-block font-xsss text-grey-500 fw-500">
                                                                 <i className="feather-calendar me-1"></i>{this.formatDate(event.date)}
@@ -117,7 +117,7 @@ class EventoUno extends Component {
                                                         </h4>
                                                     </div>
 
-                                                    <div className="me-3 p-3 rounded-xxl theme-dark-bg">
+                                                    <div className="p-2 rounded-xxl theme-dark-bg">
                                                         <h4 className="fw-700 font-lg ls-3 text-grey-900 mb-0">
                                                             <span className="ls-3 d-block font-xsss text-grey-500 fw-500">
                                                                 <i className="ti-location-pin me-1"></i>{event.location}
@@ -126,16 +126,23 @@ class EventoUno extends Component {
                                                     </div>
                                                 </h2>
                                             </div>
-                                            <div className="card-body p-0 text-end">
+                                            <div className="card-body p-0  m-auto">
+                                                
                                                 {event.users_saveds.includes(user?._id) ? (
-                                                    <div className="alert alert-warning">
-                                                        <span>Ya has guardado este evento</span>
-                                                    </div>
+                                                    <button 
+                                                    type="button" 
+                                                    className="btn btn-warning fw-500 font-xsss text-light" 
+                                                    disabled
+                                                    
+                                                >
+                                                    Evento guardado
+                                                </button>
                                                 ) : (
                                                     <button 
                                                         type="button" 
-                                                        className="btn btn-info" 
+                                                        className="btn btn-info fw-500 font-xsss text-light" 
                                                         onClick={() => this.saveEvent(event._id)}
+                                                        c
                                                     >
                                                         Guardar
                                                     </button>

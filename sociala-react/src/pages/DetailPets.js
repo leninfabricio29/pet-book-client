@@ -26,7 +26,7 @@ class DetailPets extends Component {
         const { id } = this.props.match.params;
 
         try {
-            const response = await axios.get(`http://localhost:5010/api/v1/pets/${id}`);
+            const response = await axios.get(`http://localhost:3010/api/v1/pets/${id}`);
             this.setState({ pet: response.data.pet, isLoading: false });
         } catch (error) {
             this.setState({ error: error.message, isLoading: false });

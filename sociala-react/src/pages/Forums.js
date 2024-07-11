@@ -5,6 +5,7 @@ import Popupchat from '../components/Popupchat';
 import axios from 'axios';
 import "./Chat.css";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 class Forum extends Component {
     constructor(props) {
@@ -17,6 +18,8 @@ class Forum extends Component {
             commentDetails: [],
             showReplyForm: false,
             newCommentContent: '',
+            loading: false,
+            error: null,
         };
     }
 
@@ -25,47 +28,43 @@ class Forum extends Component {
     }
 
     fetchForums = () => {
-        axios.get('http://localhost:5020/api/v1/forums/all')
+        this.setState({ loading: true });
+        axios.get('http://localhost:3010/api/v1/forums/all')
             .then(response => {
-                this.setState({ forums: response.data });
+                this.setState({ forums: response.data, loading: false });
             })
             .catch(error => {
                 console.error('Error fetching forums:', error);
+                this.setState({ loading: false, error: 'Error fetching forums' });
             });
     }
 
     fetchForumDetails = (forumId) => {
-        // Si el foro ya está desplegado, colapsarlo
         if (this.state.detailedForumId === forumId) {
             this.handleCloseDetails();
             return;
         }
 
-        axios.get(`http://localhost:5020/api/v1/forums/${forumId}`)
+        this.setState({ loading: true });
+        axios.get(`http://localhost:3010/api/v1/forums/${forumId}`)
             .then(response => {
                 const detailedForumData = response.data;
-                this.setState({ detailedForumId: forumId });
-
-                // Guardar las respuestas de los comentarios en una variable
                 const respuestas = detailedForumData.answers;
-                this.setState({ selectedForumAnswers: respuestas });
+                this.setState({ detailedForumId: forumId, selectedForumAnswers: respuestas });
 
-                // Realizar solicitud adicional para obtener detalles de cada comentario
                 const commentDetailsPromises = respuestas.map(answer =>
-                    axios.get(`http://localhost:5020/api/v1/comments/${answer.commentId._id}`)
+                    axios.get(`http://localhost:3010/api/v1/comments/${answer.commentId._id}`)
                 );
 
-                Promise.all(commentDetailsPromises)
-                    .then(commentResponses => {
-                        const commentDetails = commentResponses.map(res => res.data);
-                        this.setState({ commentDetails });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching comment details:', error);
-                    });
+                return Promise.all(commentDetailsPromises);
+            })
+            .then(commentResponses => {
+                const commentDetails = commentResponses.map(res => res.data);
+                this.setState({ commentDetails, loading: false });
             })
             .catch(error => {
                 console.error('Error fetching forum details:', error);
+                this.setState({ loading: false, error: 'Error fetching forum details' });
             });
     }
 
@@ -89,35 +88,31 @@ class Forum extends Component {
 
     handleSubmitReply = (forumId) => {
         const { newCommentContent } = this.state;
-
         const user = JSON.parse(localStorage.getItem('user'));
+        const userId = user._id;
 
-
-        const userId = user._id; // Replace with the actual user ID from authentication
-
-        axios.post('http://localhost:5020/api/v1/comments/new', {
+        axios.post('http://localhost:3010/api/v1/comments/new', {
             content: newCommentContent,
             forumId,
             createdBy: userId
         })
         .then(response => {
-            this.fetchForumDetails(forumId); // Refresh forum details after submitting the comment
+            this.fetchForumDetails(forumId);
             this.setState({ showReplyForm: false, newCommentContent: '' });
-
-            toast.success("Haz respondido este foro")
+            toast.success("Haz respondido este foro");
         })
         .catch(error => {
             console.error('Error posting comment:', error);
+            toast.error("Error posting comment");
         });
     }
 
     render() {
-        const { forums, detailedForumId, selectedForumAnswers, commentDetails, showReplyForm, newCommentContent } = this.state;
+        const { forums, detailedForumId, selectedForumAnswers, commentDetails, showReplyForm, newCommentContent, loading, error } = this.state;
 
         return (
             <Fragment>
                 <Header />
-
                 <div className="main-content right-chat-active">
                     <div className="middle-sidebar-bottom">
                         <div className="middle-sidebar-left pe-0">
@@ -127,31 +122,49 @@ class Forum extends Component {
                                         <div className="alert alert-info">
                                             <span>Este espacio está destinado a que compartas tus puntos de vista, puedes filtrar los foros por semana, días, mes</span>
                                         </div>
-
+                                        {loading }
+                                        {error && <div className="alert alert-danger">{error}</div>}
                                         {forums.map(forum => (
                                             <Fragment key={forum._id}>
                                                 <div className="row rounded shadow m-4 p-3 align-items-center">
                                                     <div className="col-2 text-center">
-                                                        <img src="https://img.freepik.com/vector-premium/icono-megafono-vector-plantilla-megafono-aislado-ilustracion-vector-megafono-stock-vector-eps-10_158224-305.jpg" width={100} alt="Megaphone Icon" />
+                                                        <img src="https://cdn.icon-icons.com/icons2/2496/PNG/512/forum_icon_150292.png" width={100} alt="Megaphone Icon" />
                                                     </div>
                                                     <div className="col-6">
                                                         <div className="text-first">
                                                             <div className="mb-2">
                                                                 <i className="feather-user m-2"></i>
-                                                                <span>Creado por: Fundación Cielo Animal</span>
+                                                                <strong className='font-xssss text-grey-500'>Fundación Cielo Animal</strong>  
                                                             </div>
                                                             <div className="mb-2">
-                                                                <h2 className="m-2">{forum.question}</h2>
+                                                                <i className="feather-help-circle m-2"></i>
+                                                                <strong className="fw-700 font-xsss text-dark-500">{forum.question}</strong>
                                                             </div>
                                                             <div className="mb-2">
                                                                 <i className="feather-calendar m-2"></i>
-                                                                <span>Fecha de creación: {new Date(forum.createdAt).toLocaleDateString()}</span>
+                                                                <span className="fw-700 font-xssss text-grey-500">Habilitado desde: {new Date(forum.createdAt).toLocaleDateString()}</span>
+                                                        
                                                             </div>
-                                                            <p className="m-2">Respuestas: {forum.answers ? forum.answers.length : 0} hasta ahora</p>
+
+                                                            <div className="mb-2">
+                                                            <strong className="fw-700 font-xsss m-2 text-grey-500 ">Estado: </strong>
+                                                                {forum.status.trim().toLowerCase() === "active" ? (
+                                                                    <spam className="text-success">Activo</spam>
+                                                                ) : (
+                                                                    <strong>Inactivo</strong>
+                                                                )}
+
+                                                            </div>
+                
+                                                            
+                                                            <strong className="fw-700 font-xsss m-2 text-grey-500">Respuestas: {forum.answers ? forum.answers.length : 0}</strong>
+                                                                
                                                         </div>
                                                     </div>
+                                                    
                                                     <div className="col-4 text-center">
-                                                        <button className="btn btn-info p-2" onClick={() => this.fetchForumDetails(forum._id)}>
+                                                    
+                                                        <button className="btn btn-info p-2 fw-700 font-xssss text-light'" onClick={() => this.fetchForumDetails(forum._id)}>
                                                             {detailedForumId === forum._id ? (
                                                                 <>
                                                                     <i className="feather-eye-off"></i> Cerrar Foro
@@ -169,60 +182,66 @@ class Forum extends Component {
                                                         <div className="row">
                                                             <div className="col-12">
                                                                 <div className="mb-3">
-                                                                    <h2>{forum.question}</h2>
-                                                                    <p>Creado por: Fundación Cielo Animal</p>
-                                                                    <p>Fecha de creación: {new Date(forum.createdAt).toLocaleDateString()}</p>
+                                                                    <h2 className="fw-700 text-dark font-xss">{forum.question}</h2>
                                                                 </div>
-
                                                                 <div className="mb-3">
-                                                                    <button className="btn btn-success" onClick={this.handleReplyClick}>
+                                                                    <button className="btn btn-success fw-700 font-xsssss text-light" onClick={this.handleReplyClick}>
                                                                         <i className="feather-plus"></i> Responder
                                                                     </button>
                                                                 </div>
-
                                                                 {showReplyForm && (
                                                                     <div className="mb-3">
                                                                         <input
+                                                                            
                                                                             type="text"
+                                                                            required
                                                                             className="form-control"
                                                                             placeholder="Escribe tu respuesta aquí..."
                                                                             value={newCommentContent}
                                                                             onChange={this.handleInputChange}
                                                                         />
-                                                                        <button className="btn btn-info mt-2" onClick={() => this.handleSubmitReply(forum._id)}>
+                                                                        <button className="btn btn-info mt-2 font-xssss fw-700" onClick={() => this.handleSubmitReply(forum._id)}>
                                                                             Publicar
                                                                         </button>
                                                                     </div>
                                                                 )}
-
                                                                 <div>
-                                                                    <h3>Respuestas:</h3>
-                                                                    <div className="chat-container">
+                                                                    <h3 className="fw-700 font-xsss text-grey-500">Respuestas:</h3>
+                                                                    <div className="">
                                                                         {selectedForumAnswers.map((answer, index) => {
                                                                             const commentDetail = commentDetails.find(detail => detail.comment._id === answer.commentId._id);
                                                                             return (
-                                                                                <div key={answer._id} className="chat-message mb-3">
+                                                                                <div key={answer._id} className="">
                                                                                     {commentDetail && (
                                                                                         <Fragment>
-                                                                                            <div className="card mb-3" style={{ maxWidth: '540px' }}>
-                                                                                                <div className="row no-gutters">
-                                                                                                    <div className="col-md-2 p-4">
-                                                                                                        <img src={commentDetail.profileData.profile.photo_profile_url} className="card-img rounded-circle" alt="user" />
-                                                                                                    </div>
-                                                                                                    <div className="col-md-10">
-                                                                                                        <div className="card-body">
-                                                                                                            <h5 className="card-title d-flex justify-content-between">
-                                                                                                                <p><strong>{commentDetail.profileData.user.name} {commentDetail.profileData.user.last_name}</strong></p>
-                                                                                                                <small className="text-muted">
-                                                                                                                    <i className="feather-clock" />
-                                                                                                                    <span className="chat-timestamp">{new Date(commentDetail.comment.createdAt).toLocaleDateString()}</span>
-                                                                                                                </small>
-                                                                                                            </h5>
-                                                                                                            <p className="card-text">{commentDetail.comment.content}</p>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
+                                                                                            <div className="card mb-3  shadow " style={{ maxWidth: '540px' }}>
+  <div className="row g-0">
+    <div className="col-md-2 d-flex align-items-center justify-content-center">
+      <img
+        src={commentDetail.profileData.profile.photo_profile_url}
+        className="rounded-circle mx-4"
+        width="40"
+        height="40"
+        alt="user"
+      />
+    </div>
+    <div className="col-md-10">
+      <div className="card-body">
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <h5 className="text-muted font-xssss">
+            <strong>{commentDetail.profileData.user.name} {commentDetail.profileData.user.last_name}</strong>
+          </h5>
+          <small className="text-muted">
+            <i className="feather-clock" >            <span className="chat-timestamp ms-1">{new Date(commentDetail.comment.createdAt).toLocaleDateString()}</span>
+            </i>
+          </small>
+        </div>
+        <spam className="font-xssss text-dark">{commentDetail.comment.content}</spam>
+      </div>
+    </div>
+  </div>
+</div>
+
                                                                                         </Fragment>
                                                                                     )}
                                                                                 </div>
@@ -230,8 +249,7 @@ class Forum extends Component {
                                                                         })}
                                                                     </div>
                                                                 </div>
-
-                                                                <button className="btn btn-secondary mt-3" onClick={this.handleCloseDetails}>Cerrar</button>
+                                                                <button className="btn btn-secondary mt-3 font-xsss fw-700" onClick={this.handleCloseDetails}>Cerrar</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -244,20 +262,7 @@ class Forum extends Component {
                         </div>
                     </div>
                 </div>
-                <ToastContainer>
-                    
-                        position="top-right"
-                        autoClose={5000}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                    
-                </ToastContainer>
-
+                <ToastContainer />
                 <Popupchat />
                 <Appfooter />
             </Fragment>

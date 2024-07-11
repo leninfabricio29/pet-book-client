@@ -19,11 +19,11 @@ class Member extends Component {
     async componentDidMount() {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
-            const profileResponse = await axios.get(`http://localhost:5000/api/v1/profiles/${user._id}`);
+            const profileResponse = await axios.get(`http://localhost:3010/api/v1/profiles/${user._id}`);
             const { data } = profileResponse;
             const profileId = data.profile._id;
 
-            const response = await axios.get('http://localhost:5000/api/v1/users/list');
+            const response = await axios.get('http://localhost:3010/api/v1/users/list');
             const usersData = response.data;
             this.setState({ users: usersData, profileId });
 

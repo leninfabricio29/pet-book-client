@@ -27,7 +27,7 @@ class Account extends Component {
         if (user) {
             this.setState({ user });
             try {
-                const profileResponse = await axios.get(`http://localhost:5000/api/v1/profiles/${user._id}`);
+                const profileResponse = await axios.get(`http://localhost:3010/api/v1/profiles/${user._id}`);
                 const { data } = profileResponse;
 
                 console.log("Estos es lo que hay en data", data);

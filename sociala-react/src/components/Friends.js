@@ -21,13 +21,13 @@ class Friends extends Component {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
 
-            const profileResponse = await axios.get(`http://localhost:5000/api/v1/profiles/${user._id}`);
+            const profileResponse = await axios.get(`http://localhost:3010/api/v1/profiles/${user._id}`);
             const { data } = profileResponse;
 
             console.log("Estos es lo que hay en data", data);
 
             // Envía los IDs de profile y follower en el cuerpo de la solicitud POST
-            const response = await axios.post('http://localhost:5000/api/v1/profiles/follow', {
+            const response = await axios.post('http://localhost:3010/api/v1/profiles/follow', {
                 profileId: data.profile._id,
                 followerId: followerId
             });
@@ -42,7 +42,7 @@ class Friends extends Component {
 
     fetchFriendSuggestions = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/v1/users/list');
+            const response = await axios.get('http://localhost:3010/api/v1/users/list');
             const users = response.data;
 
             const userLogged = JSON.parse(localStorage.getItem('user'));
@@ -55,7 +55,7 @@ class Friends extends Component {
             });
 
             // Filtrar y obtener solo 4 amigos aleatorios
-            const friendSuggestions = this.getRandomFriends(filteredUsers, 4);
+            const friendSuggestions = this.getRandomFriends(filteredUsers, 1);
 
             this.setState({ friendSuggestions });
 

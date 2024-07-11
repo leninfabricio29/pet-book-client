@@ -20,7 +20,7 @@ class Forgot extends Component {
         e.preventDefault();
         const { email, phone } = this.state;
         try {
-            const response = await axios.post(`http://localhost:5005/api/v1/auth/resetPassword`, { email, phone }, {
+            const response = await axios.post(`http://localhost:3010/api/v1/auth/resetPassword`, { email, phone }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

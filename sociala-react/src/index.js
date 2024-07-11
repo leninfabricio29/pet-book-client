@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 
 import './main.scss';
+import { GoogleMapsProvider } from './utils/GoogleMapsContext';
 
 
 import Home from './pages/Home';
@@ -19,14 +20,13 @@ import Notfound from './pages/Notfound';
 import Pets from './pages/Pets';
 import DetailPets from './pages/DetailPets';
 import Welcome from './pages/Welcome';
-import DetailPost from './pages/DetailPost'
 
 
 import Event from './pages/Event';
 import Videos from './pages/Videos';
 
 
-import Grouppage from './pages/Grouppage';
+import DetailPost    from './pages/DetailPost';
 import Userpage from './pages/Userpage';
 import Authorpage from './pages/Authorpage';
 import Analytics from './pages/Analytics';
@@ -42,6 +42,8 @@ import Eventos from './pages/Eventos';
 class Root extends Component{
   render(){
       return(
+
+        
         
           <BrowserRouter basename={'/'}>
 
@@ -49,8 +51,11 @@ class Root extends Component{
               <Switch>
 
 
-                         <Route exact path={`${process.env.PUBLIC_URL}/`} component={Login}/>
+              <GoogleMapsProvider>
+            
+            
 
+                    <Route exact path={`${process.env.PUBLIC_URL}/`} component={Login}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/home`} component={Home}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultsettings`} component={Settings}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultvideo`} component={Videos}/>
@@ -79,12 +84,11 @@ class Root extends Component{
                           
                     
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultevents`} component={Event}/>
-                    <Route exact path={`${process.env.PUBLIC_URL}/grouppage`} component={Grouppage}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/userpage/:id`} component={Userpage}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/authorpage`} component={Authorpage}/>  
 
                 
-                   
+                    </GoogleMapsProvider> 
                     
               </Switch>
           </BrowserRouter>

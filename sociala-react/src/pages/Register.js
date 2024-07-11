@@ -43,7 +43,7 @@ const RegisterForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/api/v1/users/new', formData);
+      const response = await axios.post('http://localhost:3010/api/v1/users/new', formData);
       console.log(response.data.message)
       toast.success(response.data.message)
     } catch (error) {

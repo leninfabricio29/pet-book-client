@@ -34,7 +34,7 @@ class Password extends Component {
         }
 
         try {
-            const response = await axios.post(`http://localhost:5000/api/v1/users/${user.email}/updatePassword`, {password: newPassword});
+            const response = await axios.post(`http://localhost:3010/api/v1/users/${user.email}/updatePassword`, {password: newPassword});
 
             if (response.status === 200) {
                 toast.success(response.data.message, "debes volver a iniciar sesión");

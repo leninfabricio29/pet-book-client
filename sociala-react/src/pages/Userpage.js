@@ -23,7 +23,7 @@ class Userpage extends Component {
         const {id} = this.props.match.params;
 
         try {
-            const response = await axios.get(`http://localhost:5000/api/v1/profiles/${id}`)
+            const response = await axios.get(`http://localhost:3010/api/v1/profiles/${id}`)
             this.setState({ userProfile: response.data });
             const userProfileOb = this.state.userProfile
 

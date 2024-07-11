@@ -27,7 +27,7 @@ class Pets extends Component {
 
     fetchPets = async () => {
         try {
-            const response = await axios.post('http://localhost:5010/api/v1/pets/search', {
+            const response = await axios.post('http://localhost:3010/api/v1/pets/search', {
                 owner: JSON.parse(localStorage.getItem('user'))._id
             });
             this.setState({ pets: response.data, isLoading: false });
