@@ -24,7 +24,8 @@ const DetailPost = () => {
         const response = await axios.get(`http://localhost:5020/api/v1/posts/${id}`);
         setPostDetails(response.data);
 
-        console.log(response.data)
+
+        console.log("DATA",response.data)
 
         setReactionsCount(response.data.amount_reactions);
 

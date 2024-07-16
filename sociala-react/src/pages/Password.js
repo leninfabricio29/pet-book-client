@@ -1,16 +1,17 @@
 import React, { Component, Fragment } from "react";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import {toast, ToastContainer} from 'react-toastify'
+import { toast, ToastContainer } from 'react-toastify';
 import Header from '../components/Header';
 import Leftnav from '../components/Leftnav';
 import Rightchat from '../components/Rightchat';
+import PasswordChecklist from "react-password-checklist";
+import 'react-toastify/dist/ReactToastify.css';
 
 class Password extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: '',
             newPassword: '',
             confirmPassword: '',
         };
@@ -22,11 +23,8 @@ class Password extends Component {
 
     handleSubmit = async (event) => {
         event.preventDefault();
-        const {newPassword, confirmPassword, email } = this.state;
-
+        const { newPassword, confirmPassword } = this.state;
         const user = JSON.parse(localStorage.getItem('user'));
-        
-                 
 
         if (newPassword !== confirmPassword) {
             toast.warning("Las contraseñas no coinciden");
@@ -34,16 +32,16 @@ class Password extends Component {
         }
 
         try {
-            const response = await axios.post(`http://localhost:3010/api/v1/users/${user.email}/updatePassword`, {password: newPassword});
+            const response = await axios.post(`http://localhost:3010/api/v1/users/${user.email}/updatePassword`, { password: newPassword });
 
             if (response.status === 200) {
                 toast.success(response.data.message, "debes volver a iniciar sesión");
                 setTimeout(() => {
                     this.props.history.push('/');
-                }, 3000); 
+                }, 3000);
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Error al actualizar la contraseña");
         }
     }
 
@@ -73,46 +71,42 @@ class Password extends Component {
                                                 <span>Si actualizas tu clave, deberás volver a iniciar sesión</span>
                                             </div>
                                             <form onSubmit={this.handleSubmit}>
-                                                <div className="row">
-                                                    <div className="col-lg-12 mb-3">
-                                                        
-                                                    </div>
-
-                                                    <div className="col-lg-12 mb-3">
-                                                        <div className="form-gorup">
-                                                            <label className="mont-font fw-600 font-xssss">Nueva clave</label>
-                                                            <input 
-                                                            required
-                                                                type="password" 
-                                                                name="newPassword" 
-                                                                className="form-control" 
-                                                                value={newPassword} 
-                                                                onChange={this.handleChange} 
-                                                            />
-                                                        </div>
-                                                    </div>
+                                                <div className="form-group">
+                                                    <label>Nueva contraseña:</label>
+                                                    <input
+                                                        type="password"
+                                                        name="newPassword"
+                                                        value={newPassword}
+                                                        onChange={this.handleChange}
+                                                        className="form-control"
+                                                        required
+                                                    />
                                                 </div>
-
-                                                <div className="row">
-                                                    <div className="col-lg-12 mb-3">
-                                                        <div className="form-gorup">
-                                                            <label className="mont-font fw-600 font-xssss">Confirma nueva clave</label>
-                                                            <input 
-                                                            required
-                                                                type="password" 
-                                                                name="confirmPassword" 
-                                                                className="form-control" 
-                                                                value={confirmPassword} 
-                                                                onChange={this.handleChange} 
-                                                            />
-                                                        </div>
-                                                    </div>
+                                                <div className="form-group">
+                                                    <label>Confirmar contraseña:</label>
+                                                    <input
+                                                        type="password"
+                                                        name="confirmPassword"
+                                                        value={confirmPassword}
+                                                        onChange={this.handleChange}
+                                                        className="form-control"
+                                                        required
+                                                    />
                                                 </div>
-                                                <div className="row">
-                                                    <div className="col-lg-12 mb-0">
-                                                        <button type="submit" className="bg-current text-center text-white font-xsss fw-600 p-3 w175 rounded-3 d-inline-block">Actualizar</button>
-                                                    </div>
-                                                </div>
+                                                <PasswordChecklist
+                                                    rules={["minLength", "specialChar", "number", "capital", "match"]}
+                                                    minLength={8}
+                                                    value={newPassword}
+                                                    valueAgain={confirmPassword}
+                                                    messages={{
+                                                        minLength: "La contraseña tiene más de 8 caracteres.",
+                                                        specialChar: "La contraseña tiene caracteres especiales.",
+                                                        number: "La contraseña tiene un número.",
+                                                        capital: "La contraseña tiene una letra mayúscula.",
+                                                        match: "Las contraseñas coinciden.",
+                                                    }}
+                                                />
+                                                <button type="submit" className="btn btn-primary mt-3">Actualizar clave</button>
                                             </form>
                                         </div>
                                     </div>
@@ -121,17 +115,17 @@ class Password extends Component {
                         </div>
                     </div>
                     <ToastContainer
-                    position="top-right"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="dark"
-                />
+                        position="top-right"
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="dark"
+                    />
                 </div>
             </Fragment>
         );

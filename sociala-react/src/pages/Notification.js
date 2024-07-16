@@ -143,7 +143,7 @@ class Notification extends Component {
                                         {error && <p>Error: {error}</p>}
                                         <ul className="notification-box">
                                             {filteredNotifications && filteredNotifications.map((notification, index) => (
-                                                <li key={index} className="shadow rounded">
+                                                <li key={index} className="shadow rounded mt-4">
                                                     <div className={`d-flex align-items-center p-3 rounded-3 ${notification.view ? 'bg-lightblue theme-light-bg' : ''}`}>
                                                         {notification.profile && notification.profile.profile && notification.profile.profile.photo_profile_url ? (
                                                             <img src={`${notification.profile.profile.photo_profile_url}`} alt="user" className="w45 me-3 rounded"></img>
