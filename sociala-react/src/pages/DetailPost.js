@@ -85,11 +85,18 @@ const DetailPost = () => {
     <Leftnav />
     <Rightchat />
 
-    <div className="main-content bg-lightblue theme-dark-bg right-chat-active">
+    <div className="main-content theme-dark-bg right-chat-active">
                     <div className="middle-sidebar-bottom">
                         <div className="middle-sidebar-left">
-                                <div className="card w-100 border-0 bg-white shadow-xs p-0 mb-4">
-                                <div className="container border p-2">
+                                <div className="card w-100  bg-white shadow-xs p-0 mb-4">
+                                <div className=" shadow  p-4">
+                                  <div className='text-center'>
+                                    {postDetails.type === 'Perdida' && <strong className='text-danger'> Mascota Perdida</strong>}
+                                    {postDetails.type === 'Adopcion' && <strong className='text-secondary'> Mascota en adopción</strong>}
+                                    {postDetails.type === 'Avistamiento' && <strong className='text-success'> Mascota Encontrada</strong>}
+
+
+                                  </div>
   <div className="row">
     <div className="col-md-4">
       <img className='cover rounded pt-4 pb-4 bg-dark' src={postDetails.petPhoto} alt="Pet" />

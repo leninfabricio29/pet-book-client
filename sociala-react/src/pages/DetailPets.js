@@ -81,7 +81,7 @@ class DetailPets extends Component {
                                                                 <p className="mb-1"><strong>Sexo:</strong> {pet.sex}</p>
                                                                 <p className="mb-1"><strong>Tamaño:</strong> {pet.size}</p>
                                                                 <p className="mb-1"><strong>Color:</strong> {pet.color}</p>
-                                                                <p className="mb-1"><strong>Edad:</strong> {pet.age} años</p>
+                                                                <p className="mb-1"><strong>Edad:</strong> {pet.age} meses</p>
                                                             </div>
                                                             <div className="col-md-6 text-left">
                                                                 <p className="mb-1"><strong>Nombre:</strong> {pet.name}</p>

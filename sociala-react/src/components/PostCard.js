@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Tooltip } from '@mui/material';
 import WhatsAppLink from './WhatsAppLink';
 import { GoogleMap, Marker } from '@react-google-maps/api';
-import {useGoogleMaps} from '../utils/GoogleMapsContext';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
@@ -12,8 +11,6 @@ const PostCard = ({ post }) => {
   const [hasReacted, setHasReacted] = useState(false);
   const [reactionsCount, setReactionsCount] = useState(post.amount_reactions);
   const [commentsCount, setCommentsCount] = useState(post.amount_comments);
-
-  const [commentsDetails, setCommentsDetails] = useState([]);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [newComment, setNewComment] = useState('');
 
@@ -29,10 +26,7 @@ const PostCard = ({ post }) => {
             postId: post._id
           }
         });
-
-        if (response.data.hasReacted) {
-          setHasReacted(true);
-        }
+        setHasReacted(response.data.hasReacted);
       } catch (error) {
         console.error('Error al verificar la reacción del usuario:', error);
       }
@@ -42,11 +36,10 @@ const PostCard = ({ post }) => {
   }, [post._id]);
 
   const handleShowMap = () => {
-    const newLocation = {
+    setLocation({
       lat: post.location.coordinates[1],
       lng: post.location.coordinates[0]
-    };
-    setLocation(newLocation);
+    });
   };
 
   const handleCloseMap = () => {
@@ -93,7 +86,6 @@ const PostCard = ({ post }) => {
       if (response.status === 201) {
         setCommentsCount(commentsCount + 1);
         toast.success("Haz hecho un comentario!");
-        setCommentsDetails([...commentsDetails, response.data]);
         setNewComment('');
         setShowCommentForm(false);
       }
@@ -106,9 +98,19 @@ const PostCard = ({ post }) => {
     return null;
   }
 
+  // Determina la URL de la imagen según el tipo de publicación
+  const imageUrl = 
+    post.type === 'Avistamiento' ? post.photo_post_url : 
+    post.type === 'Perdida' || post.type === 'Adopcion' ? post.petPhoto : '';
+
   return (
-    <div className="card w-100 shadow-xss rounded-xxl border-0 p-4 mb-3">
-      <div className="d-flex align-items-around">
+    <div className="card w-100 shadow rounded-xxl border-0 p-4 mb-3">
+      <div className='text-first'>
+        {post.type === 'Perdida' && <strong className="text-danger mt-2 fw-700 font-xsss">Mascota perdida</strong>}
+        {post.type === 'Avistamiento' && <strong className="text-success mt-2 fw-700 font-xsss">Mascota encontrada</strong>}
+        {post.type === 'Adopcion' && <strong className="text-secondary mt-2 fw-700 font-xsss">Mascota en adopción</strong>}
+      </div>
+      <div className="d-flex align-items-center mt-2">
         <div className='col-6 d-flex text-start'>
           <img
             src={post.profilePhoto}
@@ -118,7 +120,8 @@ const PostCard = ({ post }) => {
             height="40"
           />
           <div className="ms-3">
-            <h6 className='text-dark'>{post.firstName} {post.lastName}</h6>
+            <strong className='text-dark font-xsss'>{post.firstName} {post.lastName}</strong>
+            <h6 className='text-grey'> Publicado el: {new Date(post.createdAt).toLocaleDateString()}</h6>
           </div>
         </div>
 
@@ -133,40 +136,59 @@ const PostCard = ({ post }) => {
 
       <div className="d-flex flex-column">
         <div className="d-flex align-items-center mt-4">
-          <img
-            src={post.petPhoto}
-            alt="Pet"
-            className="img-fluid rounded"
-            width={150}
-          />
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt="Pet"
+              className="img-fluid rounded"
+              width={150}
+            />
+          )}
           <div className="ms-3">
-            <p className="mb-0">{post.body}</p>
-            <small className="text-muted">Recompensa: {post.reward}</small>
+            <p className="mb-0 font-xsss text-dark text-md-justify">{post.body}</p>
+            {post.type !== 'Adopcion' && <small className="text-muted">Recompensa: {post.reward}</small>}
           </div>
         </div>
 
-        <div className="d-flex align-items-center">
+        <div className="d-flex mt-4 justify-content-center">
+          <div className='shadow rounded m-2'>
           <Tooltip title={hasReacted ? "Te gusta esta publicación" : "Me gusta"}>
             <button className="btn p-2" onClick={handleReaction}>
-              <i className="feather-heart" style={{ color: hasReacted ? 'green' : 'black' }}></i>
-              <span className="ms-2">{reactionsCount}</span>
+              <i className="feather-heart" style={{ color: hasReacted ? 'green' : 'grey' }}></i>
+              <span className="ms-2">{reactionsCount}  </span>
             </button>
           </Tooltip>
+          </div>
+          
+          <div className='shadow rounded m-2'>
 
           <Tooltip title="Comentarios">
             <button className="btn p-2" onClick={handleShowCommentForm}>
               <i className="feather-message-square"></i>
-              <span className="ms-2">{commentsCount}</span>
+              <span className="ms-2">{commentsCount} </span>
             </button>
           </Tooltip>
+          </div>
 
+          <div className='shadow rounded m-2'>
           <Tooltip title="Ver lugar de pérdida">
             <button className="btn p-2 ms-2" data-toggle="modal" data-target={`#modalMap-${post._id}`} onClick={handleShowMap}>
-              <i className="feather-map-pin"></i>
+              <i className="feather-map-pin"></i>  
             </button>
           </Tooltip>
+          </div>
 
-          <WhatsAppLink phoneNumber={post.numberPhone} message={mensaje} />
+          <div className='shadow rounded m-2'>
+            <WhatsAppLink phoneNumber={post.numberPhone} message={mensaje} />
+
+
+
+          </div>
+
+          
+
+          
+
         </div>
 
         {showCommentForm && (
@@ -180,7 +202,12 @@ const PostCard = ({ post }) => {
                 placeholder="Escribe un comentario..."
                 required
               ></textarea>
-              <button type="submit" className="btn btn-primary mt-2">Publicar comentario</button>
+              <div className='text-center'>
+              <button type="submit" className="btn btn-info mt-2 font-xssss">Publicar 
+                <i className='feather-send mx-2'></i>
+                 </button>
+
+              </div>
             </form>
           </div>
         )}
@@ -196,14 +223,13 @@ const PostCard = ({ post }) => {
               </button>
             </div>
             <div className="modal-body">
-              
-                <GoogleMap
-                  mapContainerStyle={{ width: '100%', height: '400px' }}
-                  zoom={14}
-                  center={{ lat: post.location.coordinates[1], lng: post.location.coordinates[0] }}
-                >
-                  {location && <Marker position={location} />}
-                </GoogleMap>
+              <GoogleMap
+                mapContainerStyle={{ width: '100%', height: '400px' }}
+                zoom={14}
+                center={location || { lat: 0, lng: 0 }} // Default center if location is null
+              >
+                {location && <Marker position={location} />}
+              </GoogleMap>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={handleCloseMap}>Cerrar</button>

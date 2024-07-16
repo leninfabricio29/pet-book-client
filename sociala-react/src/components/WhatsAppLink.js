@@ -9,11 +9,14 @@ const WhatsAppLink = ({ phoneNumber, message }) => {
 
     return (
 
-        <Tooltip>
+        <Tooltip title="Contactar al creador de la publicción">
  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
              <button className="btn p-2  ms-2">
 
 <i className="feather-phone-call"></i>
+ 
+
+
 </button>
         </a>
         </Tooltip>

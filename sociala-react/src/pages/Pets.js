@@ -91,7 +91,7 @@ class Pets extends Component {
                                     <div className="row ps-2 pe-2">
                                         <div>
                                             <div className="text-center mt-2 border rounded p-2">
-                                                <span>Esta sección refleja a tus mascota registradas, puedes ver detalles de tu mascota,
+                                                <span className="font-xsss">Esta sección refleja a tus mascota registradas, puedes ver detalles de tu mascota,
                                                     editar datos, y deshabilitar el registro de tu mascota.
                                                 </span>
                                             </div>

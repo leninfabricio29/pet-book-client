@@ -106,6 +106,7 @@ class Notification extends Component {
             }
             return true;
         });
+
         return (
             <Fragment>
                 <Header />
@@ -139,20 +140,28 @@ class Notification extends Component {
                                             </div>
                                         </div>
                                         {loading && <p>Loading notifications...</p>}
-                                        {error && <p>Error: No tienes notificaciones, o no ha sido posible cargarlas</p>}
+                                        {error && <p>Error: {error}</p>}
                                         <ul className="notification-box">
                                             {filteredNotifications && filteredNotifications.map((notification, index) => (
                                                 <li key={index} className="shadow rounded">
-                                                    <div className={`d-flex align-items-center p-3 rounded-3 ${notification.read ? 'bg-lightblue theme-light-bg' : ''}`}>
-                                                        <img src={`${notification.profile.profile.photo_profile_url}`} alt="user" className="w45 me-3 rounded"></img>
+                                                    <div className={`d-flex align-items-center p-3 rounded-3 ${notification.view ? 'bg-lightblue theme-light-bg' : ''}`}>
+                                                        {notification.profile && notification.profile.profile && notification.profile.profile.photo_profile_url ? (
+                                                            <img src={`${notification.profile.profile.photo_profile_url}`} alt="user" className="w45 me-3 rounded"></img>
+                                                        ) : (
+                                                            <div className="w45 me-3 rounded bg-grey"></div>
+                                                        )}
                                                         {notification.type === 'like' && <i className="feather-heart text-danger mt-2"></i>}
                                                         {notification.type === 'comment' && <i className="feather-message-circle text-info mt-2"></i>}
                                                         {notification.type === 'foro' && <i className="feather-edit-3 text-warning mt-2"></i>}
+                                                        {notification.type === 'post' && <i className="feather-info text-info mt-2"></i>}
+
                                                         <h6 className="font-xssss text-grey-900 mb-0 mt-0 fw-500 lh-20">
-                                                            <strong>{notification.profile.user.name} {notification.profile.user.last_name}</strong>
+                                                            <strong>{notification.profile?.user?.name || 'Usuario'} {notification.profile?.user?.last_name || ''}</strong>
                                                             {notification.type === 'like' && ' Ha reaccionado a tu publicación'}
                                                             {notification.type === 'comment' && ' Ha comentado tu publicación'}
                                                             {notification.type === 'foro' && ' Ha publicado un nuevo foro'}
+                                                            {notification.type === 'post' && ' Ha publicado un reporte de mascota'}
+
                                                             <span className="d-block text-grey-500 font-xssss fw-600 mb-0 mt-0">{new Date(notification.createdAt).toLocaleString()}</span>
                                                         </h6>
                                                         <div className="col-4 ms-auto">
