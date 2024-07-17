@@ -2,7 +2,6 @@ import React, { Component, Fragment } from "react";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../components/Header';
-import Leftnav from '../components/Leftnav';
 import Rightchat from '../components/Rightchat';
 import Appfooter from '../components/Appfooter';
 import Popupchat from '../components/Popupchat';
@@ -60,7 +59,6 @@ class Account extends Component {
         return (
             <Fragment>
                 <Header />
-                <Leftnav />
                 <Rightchat />
                 <div className="main-content bg-lightblue theme-dark-bg right-chat-active">
                     <div className="middle-sidebar-bottom">

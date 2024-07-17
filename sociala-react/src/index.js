@@ -32,11 +32,15 @@ import Authorpage from './pages/Authorpage';
 import Analytics from './pages/Analytics';
 import Forums from './pages/Forums';
 
+import SideBar from './pages/SideBarAdmin';
+
 
 import { BrowserRouter, Switch, Route  } from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
 import NewPet from './pages/NewPet';
 import Eventos from './pages/Eventos';
+import DatatableUsers from './components/admin/DataTableUsers';
+import DatatablePets from './components/admin/DataTablePets';
 
 
 class Root extends Component{
@@ -61,6 +65,10 @@ class Root extends Component{
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultvideo`} component={Videos}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultanalytics`} component={Analytics}/>
                     <Route exact path={`${process.env.PUBLIC_URL}/defaultevent`} component={Eventos}/>
+                    <Route exact path={`${process.env.PUBLIC_URL}/admin`} component={DatatableUsers}/>
+                    <Route exact path={`${process.env.PUBLIC_URL}/admin/pets`} component={DatatablePets}/>
+
+
 
                     
 

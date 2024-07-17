@@ -39,6 +39,7 @@ class Forgot extends Component {
 
     render() {
         const { email, phone } = this.state;
+        console.log(phone)
         return (
             <Fragment>
                 <div className="main-wrap">

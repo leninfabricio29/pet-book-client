@@ -21,7 +21,7 @@ const DetailPost = () => {
   useEffect(() => {
     const fetchPostDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5020/api/v1/posts/${id}`);
+        const response = await axios.get(`http://localhost:3010/api/v1/posts/${id}`);
         setPostDetails(response.data);
 
 
@@ -32,7 +32,7 @@ const DetailPost = () => {
         const comments = response.data.comments;
         const commentsDetails = await Promise.all(
           comments.map(async (comment) => {
-            const commentResponse = await axios.get(`http://localhost:5020/api/v1/comments/${comment._id}`);
+            const commentResponse = await axios.get(`http://localhost:3010/api/v1/comments/${comment._id}`);
             return commentResponse.data;
           })
         );
@@ -46,7 +46,7 @@ const DetailPost = () => {
     const checkUserReaction = async () => {
       const user = JSON.parse(localStorage.getItem('user'));
       try {
-        const response = await axios.get(`http://localhost:5020/api/v1/reactions/check`, {
+        const response = await axios.get(`http://localhost:3010/api/v1/reactions/check`, {
           params: {
             userId: user._id,
             postId: id

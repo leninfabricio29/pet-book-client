@@ -1,63 +1,165 @@
-import React, { Component , Fragment } from "react";
-import Chart from "react-apexcharts";
-
+import React, { Component, Fragment } from "react";
 import Header from '../components/Header';
 import Appfooter from '../components/Appfooter';
 import Popupchat from '../components/Popupchat';
+import Select from "react-select";
+import axios from 'axios';
+import PetsChart from '../components/PetsChart';
 
 class Analytics extends Component {
     constructor(props) {
         super(props);
-    
+
         this.state = {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May' ,'Jun', 'Jul', 'Aug', 'Sep', 'Oct' , 'Nov', 'Dec'],
-            series: [{
-            name: '',
-            data: [35, 66, 34, 56, 18 ,35, 66, 34, 56, 18 , 56, 18]
-            },{
-            name: '',
-            data: [12, 34, 12, 11, 7 ,12, 34, 12, 11, 7 , 11, 7]
-            }],
-            options: {
-                chart: {
-                type: 'bar',
-            //   width:'100%',
-                height: 250,
-                stacked: true,
-                toolbar: {
-                show: false
-                },    
-            },
-            responsive: [{
-                breakpoint: 480,
-                options: {
-                legend: {
-                    position: 'bottom',
-                    offsetX: -10,
-                    offsetY: 0
-                }
-                }
-            }],
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                },
-            },
-            legend: {
-                show: false
-            },
-            fill: {
-                opacity: 1
-            },
-            },
-            
+            selectedCategory: 'mascotas',
+            filtro: { value: 'type', label: 'Tipo' }, 
+            data: [],
+            filteredData: [],
+            postsData: [],
+            filteredPostsData: [],
         };
     }
+
+    filterTypeOptions = [
+        { value: 'type', label: 'Tipo' },
+        { value: 'sex', label: 'Sexo' },
+        { value: 'has_disease', label: 'Enfermedad' },
+        { value: 'requires_treatment', label: 'Tratamiento' },
+        { value: 'sterilization_status', label: 'Esterilización' },
+        { value: 'status', label: 'Estado' }
+    ];
+
+    postTypeOptions = [
+        { value: 'type', label: 'Tipo' },
+        { value: 'amount_reactions', label: 'Reacciones' },
+        { value: 'amount_comments', label: 'Comentarios' },
+    ];
+
+    async componentDidMount() {
+        try {
+            const petsResponse = await axios.get('http://localhost:3010/api/v1/pets/list');
+            const petsData = petsResponse.data;
+            const postsResponse = await axios.get('http://localhost:3010/api/v1/posts/list');
+            const postsData = postsResponse.data;
+
+            this.setState({ 
+                data: petsData, 
+                filteredData: petsData, 
+                postsData, 
+                filteredPostsData: postsData 
+            });
+        } catch (error) {
+            console.error('Error fetching data from API:', error);
+        }
+    }
+
+    applyFilter = () => {
+        const { data, filtro, selectedCategory, postsData } = this.state;
+
+        if (selectedCategory === 'mascotas') {
+            if (filtro) {
+                const filteredData = data.filter(item => item[filtro.value] !== undefined);
+                this.setState({ filteredData });
+            } else {
+                this.setState({ filteredData: data });
+            }
+        } else if (selectedCategory === 'reportes') {
+            if (filtro) {
+                const filteredPostsData = postsData.filter(item => item[filtro.value] !== undefined);
+                this.setState({ filteredPostsData });
+            } else {
+                this.setState({ filteredPostsData: postsData });
+            }
+        }
+    }
+
+    handleSelectChange = (selectedOption) => {
+        this.setState({ filtro: selectedOption }, this.applyFilter);
+    }
+
+    handleCategoryClick = (category) => {
+        this.setState({ selectedCategory: category }, this.applyFilter);
+    }
+
+    renderStatisticsContent = () => {
+        const { selectedCategory, filtro, filteredData, filteredPostsData } = this.state;
+
+        switch (selectedCategory) {
+            case 'mascotas':
+                return (
+                    <div className="card">
+                        <h3 className="text-dark mt-4">Sección: Estadísticas mascotas</h3>
+                        <div className="col-lg-12 mb-3">
+                            <div className="alert alert-warning d-flex flex-column align-items-center text-center">
+                                <span>Estadísticas actuales Loja 2024, en esta sección (Mascotas) podrás ver información con respecto a todas las mascotas registradas en la plataforma, usa los filtros según tu necesidad.</span>
+                                <a href="/defaultanalytics" className="btn w200 mt-2 border-0 bg-tumblr p-3 text-white fw-600 rounded-3 d-inline-block font-xssss"> <i className="ti-light-bulb"> </i>Ver tutorial </a>
+                            </div>
+                            <div className="d-flex justify-content-first">
+                            <label className="mont-font fw-600 font-xss m-2">Filtrar:</label>
+
+                            <div className="col-lg-2 mb-3">
+                                        <div className="form-group">
+                                            <Select
+                                    required
+                                    value={filtro}
+                                    onChange={this.handleSelectChange}
+                                    options={this.filterTypeOptions}
+                                    placeholder='Seleccione:'
+
+                                    
+                                />
+                                        </div>
+                                    </div>
+                                
+                            </div>
+                            <div className="d-flex justify-content-center">
+                                <PetsChart filteredData={filteredData} filterKey={filtro.value} />
+                            </div>
+                        </div>
+                    </div>
+                );
+            case 'reportes':
+                return (
+                    <div className="card">
+                        <h3 className="text-dark mt-4">Sección: Estadísticas de reportes</h3>
+                        <div className="col-lg-12 mb-3">
+                            <div className="alert alert-warning d-flex flex-column align-items-center text-center">
+                                <span>Estadísticas actuales Loja 2024, en esta sección (Reportes) podrás ver información con respecto a todos los reportes registrados en la plataforma, usa los filtros según tu necesidad.</span>
+                                <a href="/defaultanalytics" className="btn w200 mt-2 border-0 bg-tumblr p-3 text-white fw-600 rounded-3 d-inline-block font-xssss"> <i className="ti-light-bulb"> </i>Ver tutorial </a>
+                            </div>
+                            <div className="d-flex justify-content-center">
+                            <label className="mont-font fw-600 font-xss m-2">Filtrar:</label>
+
+                            <div className="col-lg-2 mb-3">
+                                        <div className="form-group">
+                                            <Select
+                                    required
+                                    value={filtro}
+                                    onChange={this.handleSelectChange}
+                                    options={this.postTypeOptions}
+                                    placeholder='Seleccione:'
+
+                                    
+                                />
+                                        </div>
+                                    </div>
+                                
+                            </div>
+                            <div className="d-flex justify-content-center">
+                                <PetsChart filteredData={filteredPostsData} filterKey={filtro.value} />
+                            </div>
+                        </div>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    }
+
     render() {
         return (
-            <Fragment> 
+            <Fragment>
                 <Header />
-
                 <div className="main-content bg-white right-chat-active">
                     <div className="middle-sidebar-bottom">
                         <div className="middle-sidebar-left pe-0">
@@ -65,106 +167,47 @@ class Analytics extends Component {
                                 <div className="col-lg-12">
                                     <div className="card w-100 border-0 shadow-none p-5 rounded-xxl bg-lightblue2 mb-3">
                                         <div className="row">
-                                            <div className="col-lg-6">
-                                                <img src="https://cdn.icon-icons.com/icons2/2104/PNG/512/statistic_icon_129319.png" alt="banner" className="w-100" />
-                                            </div>
-                                            <div className="col-lg-6 ps-lg-5">
+                                            
+                                            <div className="col ps-lg-5">
                                                 <h2 className="display1-size d-block mb-2 text-grey-900 fw-700">Estadísticas hasta 2024, mascotas en Loja</h2>
-                                                <p className="font-xssss fw-500 text-grey-500 lh-26">Aquí podras encontrar datos relevantes sobres usuarios actuales, mascotas, reportes, eventos; para una mejor percepción da click en el tutorial.</p>
-                                                <a href="/defaultanalytics" className="btn w200 border-0 bg-tumblr p-3 text-white fw-600 rounded-3 d-inline-block font-xssss"> <i class="ti-light-bulb"> </i>Ver tutorial </a>
+                                                <p className="font-xssss fw-500 text-grey-500 lh-26">Aquí podrás encontrar datos relevantes sobre mascotas y reportes; para una mejor percepción da clic en el tutorial.</p>
+                                                <div className="text-center">
+                                                <a href="/defaultanalytics" className="btn w200 border-0 bg-tumblr p-3 text-white fw-600 rounded-3 d-inline-block font-xssss"> <i className="ti-light-bulb"> </i>Ver tutorial </a>
+
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>  
-                                </div>
-                                <div className="col-lg-3 pe-2 cursor-pointer transition">
-                                    <div className="card w-100 border-0 shadow-none p-4 rounded-xxl mb-3" style={{background:`#e5f6ff`}}>
-                                        <div className="card-body d-flex p-0">
-                                            <i className="btn-round-lg d-inline-block me-3 bg-primary-gradiant feather-user font-md text-white"></i>
-                                            <h4 className="text-primary font-xl fw-700">2.3M <span className="fw-500 mt-0 d-block text-grey-500 font-xssss">Usuarios </span></h4>
-                                        </div>
                                     </div>
                                 </div>
-                                <div className="col-lg-3 pe-2 ps-2 cursor-pointer">
-                                    <div className="card w-100 border-0 shadow-none p-4 rounded-xxl mb-3" style={{background:`#f6f3ff`}}>
-                                        <div className="card-body d-flex p-0">
-                                            <i className="btn-round-lg d-inline-block me-3 bg-secondary feather-gitlab font-md text-white"></i>
-                                            <h4 className="text-secondary font-xl fw-700">44.6K <span className="fw-500 mt-0 d-block text-grey-500 font-xssss">Mascotas </span></h4>
+
+                                <div className="d-flex justify-content-center">
+                                    <div className="col-lg-3 pe-2 ps-2 cursor-pointer" onClick={() => this.handleCategoryClick('mascotas')}>
+                                        <div className="card w-100 border-0 shadow-none p-4 rounded-xxl mb-3" style={{ background: `#f6f3ff` }}>
+                                            <div className="card-body d-flex p-0">
+                                                <i className="btn-round-lg d-inline-block me-3 bg-secondary feather-gitlab font-md text-white"></i>
+                                                <h4 className="text-secondary font-xl fw-700">44.6K <span className="fw-500 mt-0 d-block text-grey-500 font-xssss">Mascotas </span></h4>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="col-lg-3 pe-2 ps-2 cursor-pointer">
-                                    <div className="card w-100 border-0 shadow-none p-4 rounded-xxl mb-3" style={{background:`#e2f6e9`}}>
-                                        <div className="card-body d-flex p-0">
-                                            <i className="btn-round-lg d-inline-block me-3 bg-success ti-clipboard font-md text-white"></i>
-                                            <h4 className="text-success font-xl fw-700">603 <span className="fw-500 mt-0 d-block text-grey-500 font-xssss">Reportes</span></h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-lg-3 ps-2 cursor-pointer">
-                                    <div className="card w-100 border-0 shadow-none p-4 rounded-xxl mb-3" style={{background:`#fff0e9`}}>
-                                        <div className="card-body d-flex p-0">
-                                            <i className="btn-round-lg d-inline-block me-3 bg-warning feather-calendar font-md text-white"></i>
-                                            <h4 className="text-warning font-xl fw-700">3M <span className="fw-500 mt-0 d-block text-grey-500 font-xssss">Eventos</span></h4>
+                                    <div className="col-lg-3 pe-2 ps-2 cursor-pointer" onClick={() => this.handleCategoryClick('reportes')}>
+                                        <div className="card w-100 border-0 shadow-none p-4 rounded-xxl mb-3" style={{ background: `#e2f6e9` }}>
+                                            <div className="card-body d-flex p-0">
+                                                <i className="btn-round-lg d-inline-block me-3 bg-success ti-clipboard font-md text-white"></i>
+                                                <h4 className="text-success font-xl fw-700">603 <span className="fw-500 mt-0 d-block text-grey-500 font-xssss">Reportes</span></h4>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                
-
-
-                                <div className="text-center border mt-4 rounded">
-
-                                    <h3 className="text-dark mt-4">Sección: Estadísticas mascotas</h3>
-
-                                    <div className="col-lg-12 mb-3">
-                                <div class="alert alert-warning d-flex flex-column align-items-center text-center">
-
-                                    <spam>Estadísticas actuales Loja 2024, en esta sección (Mascotas) podrás ver información con respecto a todas 
-las mascotas registradas en la plataforma, usa los filtros segun tu necesidad.</spam>
-
-<a href="/defaultanalytics" className="btn w200 mt-2 border-0 bg-tumblr p-3 text-white fw-600 rounded-3 d-inline-block font-xssss"> <i class="ti-light-bulb"> </i>Ver tutorial </a>
-
+                                <div className="text-center mt-4 rounded shadow container-statistics">
+                                    {this.renderStatisticsContent()}
                                 </div>
-
-
-
-
-                                <div className="d-flex justify-content-around "> 
-
-                                <a href="/defaultanalytics" className="btn w100 mt-2 border-0 bg-instagram p-3 text-white fw-600 rounded-3 d-inline-block font-xssss"> Tipo  </a>
-
-                                <a href="/defaultanalytics" className="btn w100 mt-2 border-0 bg-dark p-3 text-light fw-600 rounded-3 d-inline-block font-xssss"> Raza </a>
-
-                                <a href="/defaultanalytics" className="btn w100 mt-2 border-0 bg-dark p-3 text-light fw-600 rounded-3 d-inline-block font-xssss"> Sexo </a>
-
-                                <a href="/defaultanalytics" className="btn w100 mt-2 border-0 bg-dark p-3 text-light fw-600 rounded-3 d-inline-block font-xssss"> Edad </a>
-
-                                <a href="/defaultanalytics" className="btn w140 mt-2 border-0 bg-dark p-3 text-light fw-600 rounded-3 d-inline-block font-xssss"> Enfermedades </a>
-
-                                
-
-                                </div>
-
-                                <div className="card w-100 p-3 border-0 mb-3 rounded-xxl bg-lightblue2 shadow-none overflow-hidden mt-4">
-                                    <Chart
-                                    options={this.state.options}
-                                    series={this.state.series}
-                                    type="bar"
-                                    width="100%"
-                                    />
-                                </div>
-                                </div>
-
-
-                                </div>
-                                
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <Popupchat />
-                <Appfooter /> 
+                <Appfooter />
             </Fragment>
         );
     }

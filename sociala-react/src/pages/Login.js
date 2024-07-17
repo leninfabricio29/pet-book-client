@@ -33,13 +33,22 @@ const Login = () => {
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
 
+            console.log(user.rol)
 
-            if(user.status_profile){
-                history.push('/home')
+            if(user.rol === "usuario" || user.rol === "fundacion"){
+                if(user.status_profile){
+                    history.push('/home')
+                }else{
+                    history.push('/welcome');
+    
+                }
             }else{
-                history.push('/welcome');
-
+                console.log("Es administrador")
+                
+                history.push('/admin');
             }
+
+            
             // Redirigir al usuario a /home
             
         } catch (error) {

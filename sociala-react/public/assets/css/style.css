@@ -12550,6 +12550,7 @@ strong,
   height: 96px;
   padding: 0 15px 0 0;
   background: #ffffff;
+  background-color: #f2f2f2;
   border-bottom: 2px #eee solid;
   -webkit-transition: left 0.25s;
   -o-transition: left 0.25s;

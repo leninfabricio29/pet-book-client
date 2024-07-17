@@ -6,6 +6,7 @@ import axios from 'axios';
 import "./Chat.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Tooltip } from "@mui/material";
 
 class Forum extends Component {
     constructor(props) {
@@ -20,12 +21,35 @@ class Forum extends Component {
             newCommentContent: '',
             loading: false,
             error: null,
+            question: ''
         };
     }
 
     componentDidMount() {
         this.fetchForums();
+        const user = JSON.parse(localStorage.getItem('user'));
+        this.setState({user: user});
     }
+
+    handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        const { question } = this.state;
+        const userId = JSON.parse(localStorage.getItem('user'))._id;
+    
+        try {
+          await axios.post('http://localhost:3010/api/v1/forums/new/', {
+            question,
+            createdBy: userId
+          });
+    
+          toast.info("Foro creado correctamente !");
+          window.location.reload();
+        } catch (error) {
+          toast.error("No se ha podido crear el foro: " + error);
+        }
+      };
+
 
     fetchForums = () => {
         this.setState({ loading: true });
@@ -82,14 +106,16 @@ class Forum extends Component {
         this.setState({ showReplyForm: true });
     }
 
-    handleInputChange = (event) => {
-        this.setState({ newCommentContent: event.target.value });
-    }
+    handleInputChange = (e) => {
+        this.setState({ [e.target.name]: e.target.value });
+      };
 
     handleSubmitReply = (forumId) => {
         const { newCommentContent } = this.state;
         const user = JSON.parse(localStorage.getItem('user'));
         const userId = user._id;
+
+        
 
         axios.post('http://localhost:3010/api/v1/comments/new', {
             content: newCommentContent,
@@ -108,8 +134,8 @@ class Forum extends Component {
     }
 
     render() {
-        const { forums, detailedForumId, selectedForumAnswers, commentDetails, showReplyForm, newCommentContent, loading, error } = this.state;
-
+        const { forums, detailedForumId, selectedForumAnswers, commentDetails, showReplyForm, newCommentContent, loading, error, user, question } = this.state;
+            console.log("En render", user)
         return (
             <Fragment>
                 <Header />
@@ -124,6 +150,21 @@ class Forum extends Component {
                                         </div>
                                         {loading }
                                         {error && <div className="alert alert-danger">{error}</div>}
+
+                                        {user?.rol === "fundacion" && (
+                                    <div className="text-end ">
+                                        {/* Render your button or any other component here */}
+                                        <button 
+                                            type="button" 
+                                            className="btn btn-info m-4"
+                                             data-toggle="modal" data-target="#exampleModal"
+                                        >
+                                            <Tooltip title="Crea un nuevo foro">
+                                                <i className="feather-plus"></i>
+                                            </Tooltip>
+                                        </button>
+                                    </div>
+                                )}
                                         {forums.map(forum => (
                                             <Fragment key={forum._id}>
                                                 <div className="row rounded shadow m-4 p-3 align-items-center">
@@ -197,6 +238,8 @@ class Forum extends Component {
                                                                             required
                                                                             className="form-control"
                                                                             placeholder="Escribe tu respuesta aquí..."
+                                                                            name="newCommentContent"
+
                                                                             value={newCommentContent}
                                                                             onChange={this.handleInputChange}
                                                                         />
@@ -256,6 +299,43 @@ class Forum extends Component {
                                                 )}
                                             </Fragment>
                                         ))}
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Crea un nuevo foro</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <form onSubmit={this.handleSubmit}>
+  
+  <div className="form-group">
+    <label>Pregunta para el nuevo foro:</label>
+    <input
+      className="form-control"
+      name="question"
+      value={question}
+      onChange={this.handleInputChange}
+      required
+    />
+  </div>
+  
+  
+
+  <div className="d-flex justify-content-end">
+    <button className="btn bg-instagram text-light mt-4" type="submit">
+      Crear foro
+    </button>
+  </div>
+</form>
+      </div>
+    </div>
+  </div>
+</div>
                                     </div>
                                 </div>
                             </div>

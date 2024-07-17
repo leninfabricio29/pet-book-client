@@ -6,6 +6,33 @@ import Rightchat from '../components/Rightchat';
 import Appfooter from '../components/Appfooter';
 import Popupchat from '../components/Popupchat';
 import { toast, ToastContainer } from 'react-toastify';
+import { Tooltip } from "@mui/material";
+import Select from "react-select";
+
+
+const SelectsRow = ({ onSelectChange }) => {
+    const eventTypeOptions = [
+      { value: 'Adopción', label: 'Adopción' },
+      { value: 'Donaciones', label: 'Donaciones' },
+      { value: 'Esterilización', label: 'Esterilización' }
+    ];
+  
+  
+    
+  
+    return (
+      <div className="select-wrapper">
+        <Select
+          onChange={onSelectChange}
+          placeholder="Seleccione:"
+          options={eventTypeOptions}
+        />
+      </div>
+    );
+  };
+  
+ 
+
 
 class EventoUno extends Component {
     constructor(props) {
@@ -13,6 +40,11 @@ class EventoUno extends Component {
         this.state = {
             events: [],
             user: null,
+            selectedDate: '',
+      title: '',
+      description: '',
+      eventType: null,
+      location: '',
         };
     }
 
@@ -71,8 +103,45 @@ class EventoUno extends Component {
         return formattedDate;
     };
 
+    handleDateChange = (e) => {
+        this.setState({ selectedDate: e.target.value });
+      };
+    
+      handleInputChange = (e) => {
+        this.setState({ [e.target.name]: e.target.value });
+      };
+    
+      handleEventChange = (selectedOption) => {
+        this.setState({ eventType: selectedOption });
+      };
+    
+      handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        const { title, description, selectedDate, eventType, location } = this.state;
+        const userId = JSON.parse(localStorage.getItem('user'))._id;
+    
+        try {
+          await axios.post('http://localhost:5020/api/v1/events/new/', {
+            title,
+            description: eventType ? eventType.label : description,
+            date: selectedDate,
+            location,
+            userId
+          });
+    
+          toast.info("Evento creado correctamente !");
+          window.location.reload();
+        } catch (error) {
+          toast.error("No se ha podido crear el evento: " + error);
+        }
+      };
+    
+
     render() {
         const { events, user } = this.state;
+        const { selectedDate, title, location } = this.state;
+
 
         return (
             <Fragment>
@@ -90,6 +159,21 @@ class EventoUno extends Component {
                                 <div className="alert alert-info mt-4">
                                     <span>En esta sección verás todos los eventos que existen en la ciudad tales como, jornadas de adopción, de vacunación y de esterilización.</span>
                                 </div>
+
+                                {user?.rol === "fundacion" && (
+                                    <div className="text-end ">
+                                        {/* Render your button or any other component here */}
+                                        <button 
+                                            type="button" 
+                                            className="btn btn-info m-4"
+                                             data-toggle="modal" data-target="#exampleModal"
+                                        >
+                                            <Tooltip title="Crea un nuevo evento">
+                                                <i className="feather-plus"></i>
+                                            </Tooltip>
+                                        </button>
+                                    </div>
+                                )}
 
                                 {events.map((event, index) => (
                                     <div key={index} className="col-lg-4 col-md-6 pe-2 ps-2">
@@ -142,7 +226,7 @@ class EventoUno extends Component {
                                                         type="button" 
                                                         className="btn btn-info fw-500 font-xsss text-light" 
                                                         onClick={() => this.saveEvent(event._id)}
-                                                        c
+                                                        
                                                     >
                                                         Guardar
                                                     </button>
@@ -151,6 +235,70 @@ class EventoUno extends Component {
                                         </div>
                                     </div>
                                 ))}
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <form onSubmit={this.handleSubmit}>
+  <div className="text-center">
+    <h3>Gestión de eventos</h3>
+  </div>
+
+  <div className="form-group">
+    <label>Fecha del evento:</label>
+    <input
+      type="date"
+      className="form-control"
+      name="selectedDate"
+      value={selectedDate}
+      onChange={this.handleDateChange}
+      required
+    />
+  </div>
+
+  <div className="form-group">
+    <label>Título:</label>
+    <input
+      className="form-control"
+      name="title"
+      value={title}
+      onChange={this.handleInputChange}
+      required
+    />
+  </div>
+  <div className="form-group">
+    <label>Tipo de Evento:</label>
+    <SelectsRow onSelectChange={this.handleEventChange} />
+  </div>
+  <div className="form-group">
+    <label>Ubicación:</label>
+    <input
+      className="form-control"
+      name="location"
+      value={location}
+      onChange={this.handleInputChange}
+      required
+    />
+  </div>
+
+  <div className="d-flex justify-content-end">
+    <button className="btn bg-instagram text-light mt-4" type="submit">
+      Guardar evento
+    </button>
+  </div>
+</form>
+      </div>
+    </div>
+  </div>
+</div>
 
                             </div>
                         </div>
