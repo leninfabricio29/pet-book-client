@@ -60,7 +60,6 @@ class Welcome extends React.Component {
 
             if (response.status === 201) {
                 toast.success('Perfil creado exitosamente');
-                // Esperar 1 segundo antes de redirigir
                 setTimeout(() => {
                     this.props.history.push('/home');
                 }, 1000);
@@ -106,7 +105,7 @@ class Welcome extends React.Component {
                                     <span>Tu usuario ha sido creado con éxito, pero para poder interactuar en la plataforma debes obligatoriamente crear un perfil.</span>
                                 </div>
                                 <div className="d-grid gap-2 d-sm-flex justify-content-center mt-4">
-                                    <button className="btn btn-info btn-lg me-sm-3 mb-3 mb-sm-0" onClick={this.toggleModal}>Crear Perfil</button>
+                                    <button className="btn btn-info btn-lg me-sm-3 mb-3 mb-sm-0" onClick={this.toggleModal} >Crear Perfil</button>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +116,7 @@ class Welcome extends React.Component {
                     <Modal.Header closeButton>
                         <Modal.Title>Datos del perfil</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
+                    <Modal.Body style={{ maxHeight: 'calc(100vh - 110px)', overflowY: 'auto' }}>
                         <form onSubmit={this.handleSubmit}>
                             <div className="container">
                                 <div className="row">

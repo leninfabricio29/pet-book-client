@@ -111,7 +111,9 @@ const Login = () => {
                                     <div className="form-group mb-1">
                                         <button type="submit" className="form-control text-center style2-input text-white fw-600 bg-dark border-0 p-0 ">Ingresar</button>
                                     </div>
-                                    <h6 className="text-grey-500 font-xsss fw-500 mt-0 mb-0 lh-32">Si no tienes una cuenta <a href="/register" className="fw-700 ms-1"> Registrate</a></h6>
+                                    <div className="alert alert-danger">
+                                <p>Si previamente iniciaste sesión, haz click aquí : <a href="http://localhost:3000/home">PetBook | Inicio</a></p>
+                            </div>
                                 </div>
                             </form>
                         </div>

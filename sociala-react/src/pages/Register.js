@@ -150,7 +150,7 @@ style={{backgroundImage: `url("https://i.pinimg.com/564x/49/21/7b/49217bb2a6141d
                   </div>
                   <button type="submit" className="form-control text-center style2-input text-white fw-600 bg-dark border-0 p-0 " disabled={!isPasswordValid} >Registrarte</button>
                 </form>
-                <h6 className="text-grey-500 font-xsss fw-500 mt-0 mb-0 lh-32">Si ya tienes cuenta,  <a href="/login" className="fw-700 ms-1">Ingresa</a></h6>
+                <h6 className="text-grey-500 font-xsss fw-500 mt-0 mb-0 lh-32">Si ya tienes cuenta,  <a href="/" className="fw-700 ms-1">Ingresa</a></h6>
               </div>
             </div> 
           </div>

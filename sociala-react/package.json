@@ -44,9 +44,11 @@
     "react-select": "^5.8.0",
     "react-slick": "^0.28.1",
     "react-toastify": "^7.0.4",
+    "recharts": "^2.12.7",
     "rsuite": "^5.60.2",
     "slick-carousel": "^1.8.1",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "yarn": "^1.22.22"
   },
   "babel": {
     "plugins": [

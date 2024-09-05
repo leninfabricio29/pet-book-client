@@ -55,7 +55,7 @@ class Friends extends Component {
             });
 
             // Filtrar y obtener solo 4 amigos aleatorios
-            const friendSuggestions = this.getRandomFriends(filteredUsers, 1);
+            const friendSuggestions = this.getRandomFriends(filteredUsers, 3);
 
             this.setState({ friendSuggestions });
 

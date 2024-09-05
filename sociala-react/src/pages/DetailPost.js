@@ -2,7 +2,6 @@ import React, { useState, useEffect , Fragment} from 'react';
 import axios from 'axios';
 import { Tooltip } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 import Header from '../components/Header';
 import Leftnav from '../components/Leftnav';
