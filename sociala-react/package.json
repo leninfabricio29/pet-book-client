@@ -5,9 +5,10 @@
   "basename": "/",
   "homepage": "https://sociala.uitheme.net/",
   "dependencies": {
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
-    "@mui/material": "^5.15.17",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^5.16.7",
+    "@mui/material": "^5.16.7",
     "@mui/x-data-grid": "^7.10.0",
     "@react-google-maps/api": "^2.19.3",
     "@testing-library/jest-dom": "^5.14.1",
@@ -43,9 +44,11 @@
     "react-scripts": "^5.0.1",
     "react-select": "^5.8.0",
     "react-slick": "^0.28.1",
+    "react-table": "^7.8.0",
     "react-toastify": "^7.0.4",
     "recharts": "^2.12.7",
     "rsuite": "^5.60.2",
+    "serve": "^14.2.3",
     "slick-carousel": "^1.8.1",
     "web-vitals": "^1.1.2",
     "yarn": "^1.22.22"
@@ -59,7 +62,8 @@
     "start": "react-scripts start --port 6000",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "init": "serve build -s -n -L -p -$PORT"
   },
   "eslintConfig": {
     "extends": [

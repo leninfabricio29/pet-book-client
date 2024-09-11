@@ -1,0 +1,140 @@
+/* UserTableStyles.css */
+
+.user-table-container {
+    font-family: 'Arial', sans-serif;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 1000px;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.table-header h2 {
+    font-size: 24px;
+    color: #333;
+    font-weight: bold;
+}
+
+.table-controls {
+    display: flex;
+    align-items: center;
+}
+
+.global-filter input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-right: 15px;
+    font-size: 14px;
+    width: 200px;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.user-table th,
+.user-table td {
+    text-align: left;
+    padding: 14px;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px;
+}
+
+.user-table th {
+    background-color: #343a40;
+    color: #fff;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.user-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 8px 12px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 4px;
+    background-color: #343a40;
+    color: white;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    background-color: #b5b5b5;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #495057;
+}
+
+/* Color de las alertas por días */
+.red {
+    background-color: rgb(236, 99, 99);
+    padding: 8px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.orange {
+    background-color: rgb(233, 171, 56);
+    padding: 8px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.blue {
+    background-color: rgb(94, 116, 245);
+    padding: 8px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.green {
+    background-color: rgb(93, 145, 83);
+    padding: 8px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Mejorando el efecto hover de las filas */
+.user-table tr:hover {
+    background-color: #f2f4f6;
+}
+
+/* Ajustando el estilo del select */
+.table-controls select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-left: 10px;
+    font-size: 14px;
+}

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useHistory } from 'react-router-dom';
-import DatatableUsers from '../components/admin/DataTableUsers';
 
 const SideBar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -76,11 +75,8 @@ const SideBar = () => {
                             <ul className="mb-1 top-content text-grey">
                                 <li className="logo d-none d-xl-block d-lg-block"></li>
                                 <li><Link to="/home" className="nav-content-bttn open-font"><i className="feather-home btn-round-md text-grey-500 me-3"></i><span>Administración</span></Link></li>
-                                <li><Link to="/defaultforums" className="nav-content-bttn open-font"><i className="feather-users btn-round-md text-grey-500 me-3"></i><span>Usuarios</span></Link></li>
-                                <li><Link to="/defaultevents" className="nav-content-bttn open-font"><i className="feather-grid btn-round-md text-grey-500 me-3"></i><span>Perfiles</span></Link></li>
+                                <li><Link to="/admin/users" className="nav-content-bttn open-font"><i className="feather-users btn-round-md text-grey-500 me-3"></i><span>Usuarios</span></Link></li>
                                 <li><Link to="/admin/pets" className="nav-content-bttn open-font"><i className="feather-github btn-round-md text-grey-500 me-3"></i><span>Mascotas</span></Link></li>
-                                <li><Link to="/defaultnoti" className="nav-content-bttn open-font"><i className="feather-image btn-round-md text-grey-500 me-3"></i><span>Publicaciones</span></Link></li>
-
                                 <li><Link to="/defaultnoti" className="nav-content-bttn open-font"><i className="feather-calendar btn-round-md text-grey-500 me-3"></i><span>Eventos</span></Link></li>
                                 <li><Link to="/defaultnoti" className="nav-content-bttn open-font"><i className="feather-mic btn-round-md text-grey-500 me-3"></i><span>Foros</span></Link></li>
 
